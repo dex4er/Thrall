@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use threads;
-use Server::Starter ();
 use base qw(Starlet::Server);
 
 sub new {
@@ -12,20 +11,6 @@ sub new {
     
     # setup before instantiation
     my $listen_sock;
-    if (defined $ENV{SERVER_STARTER_PORT}) {
-        my ($hostport, $fd) = %{Server::Starter::server_ports()};
-        if ($hostport =~ /(.*):(\d+)/) {
-            $args{host} = $1;
-            $args{port} = $2;
-        } else {
-            $args{port} = $hostport;
-        }
-        $listen_sock = IO::Socket::INET->new(
-            Proto => 'tcp',
-        ) or die "failed to create socket:$!";
-        $listen_sock->fdopen($fd, 'w')
-            or die "failed to bind to listening socket:$!";
-    }
     my $max_workers = 10;
     for (qw(max_workers workers)) {
         $max_workers = delete $args{$_}
