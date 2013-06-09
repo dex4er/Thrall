@@ -3,7 +3,7 @@ package Plack::Handler::Starlet;
 use strict;
 use warnings;
 
-use Parallel::Prefork;
+use threads;
 use Server::Starter ();
 use base qw(Starlet::Server);
 
@@ -46,28 +46,15 @@ sub run {
     my($self, $app) = @_;
     $self->setup_listener();
     if ($self->{max_workers} != 0) {
-        # use Parallel::Prefork
-        my %pm_args = (
-            max_workers => $self->{max_workers},
-            trap_signals => {
-                TERM => 'TERM',
-                HUP  => 'TERM',
-            },
-        );
-        if (defined $self->{spawn_interval}) {
-            $pm_args{trap_signals}{USR1} = [ 'TERM', $self->{spawn_interval} ];
-            $pm_args{spawn_interval} = $self->{spawn_interval};
+        foreach my $n (1..$self->{max_workers}) {
+            my $thr = threads->create(sub {
+                my ($app, $self) = @_;
+                $self->accept_loop($app, $self->_calc_reqs_per_child());
+            }, $app, $self);
         }
-        if (defined $self->{err_respawn_interval}) {
-            $pm_args{err_respawn_interval} = $self->{err_respawn_interval};
+        foreach my $thr (threads->list) {
+            $thr->join;
         }
-        my $pm = Parallel::Prefork->new(\%pm_args);
-        while ($pm->signal_received !~ /^(TERM|USR1)$/) {
-            $pm->start and next;
-            $self->accept_loop($app, $self->_calc_reqs_per_child());
-            $pm->finish;
-        }
-        $pm->wait_all_children;
     } else {
         # run directly, mainly for debugging
         local $SIG{TERM} = sub { exit 0; };
