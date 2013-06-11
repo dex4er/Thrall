@@ -2,6 +2,8 @@ package Starlet::Server;
 use strict;
 use warnings;
 
+use threads;
+
 use Carp ();
 use Plack;
 use Plack::HTTPParser qw( parse_http_request );
@@ -20,7 +22,7 @@ use Time::HiRes qw(time);
 use constant MAX_REQUEST_SIZE => 131072;
 use constant MSWin32          => $^O eq 'MSWin32';
 
-my $null_io = do { open my $io, "<", \""; $io };
+my $null_io = do { open my $io, "<", \""; $io }; #"
 
 sub new {
     my($class, %args) = @_;
@@ -92,9 +94,9 @@ sub accept_loop {
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
     local $SIG{TERM} = sub {
-        exit 0 if $self->{can_exit};
+        threads->exit if $self->{can_exit};
         $self->{term_received}++;
-        exit 0
+        threads->exit
             if ($is_keepalive && $self->{can_exit}) || $self->{term_received} > 1;
         # warn "server termination delayed while handling current HTTP request";
     };
@@ -211,7 +213,7 @@ sub handle_connection {
         die "Bad response $res";
     }
     if ($self->{term_received}) {
-        exit 0;
+        threads->exit;
     }
     
     return $use_keepalive;

@@ -31,14 +31,20 @@ sub run {
     my($self, $app) = @_;
     $self->setup_listener();
     if ($self->{max_workers} != 0) {
-        foreach my $n (1..$self->{max_workers}) {
-            my $thr = threads->create(sub {
-                my ($app, $self) = @_;
-                $self->accept_loop($app, $self->_calc_reqs_per_child());
-            }, $app, $self);
+        local $SIG{TERM} = sub {
+            foreach my $thr (threads->list) {
+                $thr->kill('TERM')->detach;
+            }
+            $self->{term_received}++;
+        };
+        foreach my $n (1 .. $self->{max_workers}) {
+            $self->_create_thread($app);
         }
-        foreach my $thr (threads->list) {
-            $thr->join;
+        while (not $self->{term_received}) {
+            foreach my $thr (threads->list(threads::joinable)) {
+                $thr->join;
+                $self->_create_thread($app);
+            }
         }
     } else {
         # run directly, mainly for debugging
@@ -47,6 +53,17 @@ sub run {
             $self->accept_loop($app, $self->_calc_reqs_per_child());
         }
     }
+}
+
+sub _create_thread {
+    my ($self, $app) = @_;
+    my $thr = threads->create(
+        sub {
+            my ($self, $app) = @_;
+            $self->accept_loop($app, $self->_calc_reqs_per_child());
+        },
+        $self, $app
+    );
 }
 
 sub _calc_reqs_per_child {
