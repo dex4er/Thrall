@@ -39,11 +39,13 @@ sub run {
         };
         foreach my $n (1 .. $self->{max_workers}) {
             $self->_create_thread($app);
+            sleep $self->{spawn_interval} if $self->{spawn_interval};
         }
         while (not $self->{term_received}) {
             foreach my $thr (threads->list(threads::joinable)) {
                 $thr->join;
                 $self->_create_thread($app);
+                sleep $self->{spawn_interval} if $self->{spawn_interval};
             }
         }
     } else {
@@ -51,6 +53,7 @@ sub run {
         local $SIG{TERM} = sub { exit 0; };
         while (1) {
             $self->accept_loop($app, $self->_calc_reqs_per_child());
+            sleep $self->{spawn_interval} if $self->{spawn_interval};
         }
     }
 }
