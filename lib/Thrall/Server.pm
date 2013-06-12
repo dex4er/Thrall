@@ -53,8 +53,8 @@ sub new {
 
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
-            "Preforking in $class is deprecated. Falling back to the non-forking mode. ",
-            "If you need preforking, use Starman, Starlet or Thrall instead and run like `plackup -s Thrall`",
+            "Threading in $class is deprecated. Falling back to the single thread mode. ",
+            "If you need more workers, use Starman, Starlet or Thrall instead and run like `plackup -s Thrall`",
         );
     }
 
