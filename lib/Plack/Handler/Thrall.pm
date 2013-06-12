@@ -1,10 +1,10 @@
-package Plack::Handler::Starlet;
+package Plack::Handler::Thrall;
 
 use strict;
 use warnings;
 
 use threads;
-use base qw(Starlet::Server);
+use base qw(Thrall::Server);
 
 sub new {
     my ($klass, %args) = @_;

@@ -1,27 +1,23 @@
-package Starlet;
+package Thrall;
 
 use 5.008_001;
 
-our $VERSION = '0.18';
+our $VERSION = '0.01';
 
 1;
 __END__
 
 =head1 NAME
 
-Starlet - a simple, high-performance PSGI/Plack HTTP server
+Thrall - a simple, high-performance PSGI/Plack HTTP server
 
 =head1 SYNOPSIS
 
-  % start_server --port=80 -- plackup -s Starlet [options] your-app.psgi
-
-  or if you do not need hot deploy,
-
-  % plackup -s Starlet --port=80 [options] your-app.psgi
+  % plackup -s Thrall --port=80 [options] your-app.psgi
 
 =head1 DESCRIPTION
 
-Starlet is a standalone HTTP/1.0 server with keep-alive support, formerly known as L<Plack::Server::Standalone::Prefork> and L<Plack::Server::Standalone::Prefork::Server::Starter>.
+Thrall is a standalone HTTP/1.0 server with keep-alive support, formerly known as L<Plack::Server::Standalone::Prefork> and L<Plack::Server::Standalone::Prefork::Server::Starter>.
 
 The server supports following features, and is suitable for running HTTP application servers behind a reverse proxy.
 
@@ -33,7 +29,7 @@ The server supports following features, and is suitable for running HTTP applica
 
 =head1 COMMAND LINE OPTIONS
 
-In addition to the options supported by L<plackup>, Starlet accepts following options(s).
+In addition to the options supported by L<plackup>, Thrall accepts following options(s).
 
 =head2 --max-workers=#
 
@@ -65,15 +61,14 @@ if set, worker processes will not be spawned more than once than every given sec
 
 =head1 NOTES
 
-L<Starlet> is designed and implemented to be simple, secure and fast, especially for running as a HTTP application server running behind a reverse proxy.  It only depends on a minimal number of well-designed (and well-focused) modules.
+L<Thrall> is designed and implemented to be simple, secure and fast, especially for running as a HTTP application server running behind a reverse proxy.  It only depends on a minimal number of well-designed (and well-focused) modules.
 
 On the other hand if you are looking for a standalone preforking HTTP server that receives HTTP requests directly from the Internet, then you should look at L<Starman>.
 
 =head1 SEE ALSO
 
-L<Parallel::Prefork>
+L<Starlet>,
 L<Starman>
-L<Server::Starter>
 
 =head1 AUTHOR
 

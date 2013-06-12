@@ -13,7 +13,7 @@ test_tcp(
         my $port = shift;
         my $runner = Plack::Runner->new;
         $runner->parse_options(
-            qw(--server Starlet --max-workers 0 --port), $port,
+            qw(--server Thrall --max-workers 0 --port), $port,
         );
         $runner->run(
             sub {

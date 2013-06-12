@@ -1,4 +1,4 @@
-package Starlet::Server;
+package Thrall::Server;
 use strict;
 use warnings;
 
@@ -54,7 +54,7 @@ sub new {
     if ($args{max_workers} && $args{max_workers} > 1) {
         Carp::carp(
             "Preforking in $class is deprecated. Falling back to the non-forking mode. ",
-            "If you need preforking, use Starman or Starlet instead and run like `plackup -s Starlet`",
+            "If you need preforking, use Starman, Starlet or Thrall instead and run like `plackup -s Thrall`",
         );
     }
 

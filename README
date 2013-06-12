@@ -1,16 +1,12 @@
 NAME
-    Starlet - a simple, high-performance PSGI/Plack HTTP server
+    Thrall - a simple, high-performance PSGI/Plack HTTP server
 
 SYNOPSIS
-      % start_server --port=80 -- plackup -s Starlet [options] your-app.psgi
-
-      or if you do not need hot deploy,
-
-      % plackup -s Starlet --port=80 [options] your-app.psgi
+      % plackup -s Thrall --port=80 [options] your-app.psgi
 
 DESCRIPTION
-    Starlet is a standalone HTTP/1.0 server with keep-alive support,
-    formerly known as Plack::Server::Standalone::Prefork and
+    Thrall is a standalone HTTP/1.0 server with keep-alive support, formerly
+    known as Plack::Server::Standalone::Prefork and
     Plack::Server::Standalone::Prefork::Server::Starter.
 
     The server supports following features, and is suitable for running HTTP
@@ -23,7 +19,7 @@ DESCRIPTION
     - fast HTTP processing using HTTP::Parser::XS (optional)
 
 COMMAND LINE OPTIONS
-    In addition to the options supported by plackup, Starlet accepts
+    In addition to the options supported by plackup, Thrall accepts
     following options(s).
 
   --max-workers=#
@@ -57,7 +53,7 @@ COMMAND LINE OPTIONS
     for more information. (dedault: none)
 
 NOTES
-    Starlet is designed and implemented to be simple, secure and fast,
+    Thrall is designed and implemented to be simple, secure and fast,
     especially for running as a HTTP application server running behind a
     reverse proxy. It only depends on a minimal number of well-designed (and
     well-focused) modules.
@@ -67,7 +63,7 @@ NOTES
     should look at Starman.
 
 SEE ALSO
-    Parallel::Prefork Starman Server::Starter
+    Starlet, Starman
 
 AUTHOR
     Kazuho Oku

@@ -12,19 +12,19 @@ test_tcp(
         my $ua = LWP::UserAgent->new;
         my $res = $ua->get("http://localhost:$port/");
         ok( $res->is_success );
-        like( scalar $res->header('Server'), qr/Starlet/ );
+        like( scalar $res->header('Server'), qr/Thrall/ );
         unlike( scalar $res->header('Server'), qr/Hello/ );
 
         $res = $ua->get("http://localhost:$port/?server=1");
         ok( $res->is_success );
-        unlike( scalar $res->header('Server'), qr/Starlet/ );
+        unlike( scalar $res->header('Server'), qr/Thrall/ );
         like( scalar $res->header('Server'), qr/Hello/ );
 
     },
     server => sub {
         my $port = shift;
         my $loader = Plack::Loader->load(
-            'Starlet',
+            'Thrall',
             port => $port,
             max_workers => 5,
         );

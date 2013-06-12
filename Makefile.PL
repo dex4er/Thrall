@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-all_from 'lib/Starlet.pm';
-readme_from 'lib/Starlet.pm';
+all_from 'lib/Thrall.pm';
+readme_from 'lib/Thrall.pm';
 
 requires 'Plack' => 0.9920;
 
