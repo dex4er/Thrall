@@ -29,7 +29,13 @@ sub new {
 
 sub run {
     my($self, $app) = @_;
+
+    # EV does not work with threads
+    $ENV{PERL_ANYEVENT_MODEL} = 'Perl';
+    $ENV{PERL_ANYEVENT_IO_MODEL} = 'Perl';
+
     $self->setup_listener();
+
     local $SIG{PIPE} = sub { 'IGNORE' };
     if ($self->{max_workers} != 0) {
         local $SIG{TERM} = sub {
