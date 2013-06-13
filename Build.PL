@@ -24,6 +24,9 @@ my $build = Module::Build::My->new(
         'Test::More'            => 0.88,
         'Test::TCP'             => 0.15,
     },
+    script_files => [
+        'script/thrall.pl',
+    ],
     auto_configure_requires => 0,
     create_makefile_pl      => 'traditional',
     create_readme           => 1,
