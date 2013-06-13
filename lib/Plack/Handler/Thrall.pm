@@ -37,6 +37,7 @@ sub run {
     $self->setup_listener();
 
     local $SIG{PIPE} = sub { 'IGNORE' };
+
     if ($self->{max_workers} != 0) {
         local $SIG{TERM} = sub {
             foreach my $thr (threads->list) {
@@ -46,14 +47,16 @@ sub run {
         };
         foreach my $n (1 .. $self->{max_workers}) {
             $self->_create_thread($app);
-            sleep $self->{spawn_interval} if $self->{spawn_interval};
+            $self->_sleep($self->{spawn_interval});
         }
         while (not $self->{term_received}) {
             foreach my $thr (threads->list(threads::joinable)) {
                 $thr->join;
                 $self->_create_thread($app);
-                sleep $self->{spawn_interval} if $self->{spawn_interval};
+                $self->_sleep($self->{spawn_interval});
             }
+            # slow down main thread
+            $self->_sleep(0.1);
         }
     } else {
         # run directly, mainly for debugging
@@ -63,6 +66,11 @@ sub run {
             sleep $self->{spawn_interval} if $self->{spawn_interval};
         }
     }
+}
+
+sub _sleep {
+    my ($self, $t) = @_;
+    select undef, undef, undef, $t if $t;
 }
 
 sub _create_thread {
