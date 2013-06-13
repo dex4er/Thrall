@@ -3,8 +3,10 @@ package Plack::Handler::Thrall;
 use strict;
 use warnings;
 
-use threads;
 use base qw(Thrall::Server);
+
+use threads;
+use Thread::Semaphore;
 
 use constant DEBUG => $ENV{DEBUG};
 
@@ -26,6 +28,8 @@ sub new {
         if $listen_sock;
     $self->{max_workers} = $max_workers;
     
+    $self->{semaphore} = Thread::Semaphore->new;
+
     $self;
 }
 
@@ -60,7 +64,7 @@ sub run {
                 $self->_sleep($self->{spawn_interval});
             }
             # slow down main thread
-            $self->_sleep(0.1);
+            $self->{semaphore}->down;
         }
     } else {
         # run directly, mainly for debugging
@@ -85,6 +89,7 @@ sub _create_thread {
             warn "*** thread ", threads->tid, " starting" if DEBUG;
             $self->accept_loop($app, $self->_calc_reqs_per_child());
             warn "*** thread ", threads->tid, " ending" if DEBUG;
+            $self->{semaphore}->up;
         },
         $self, $app
     );
