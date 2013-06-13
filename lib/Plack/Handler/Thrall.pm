@@ -6,6 +6,8 @@ use warnings;
 use threads;
 use base qw(Thrall::Server);
 
+use constant DEBUG => $ENV{DEBUG};
+
 sub new {
     my ($klass, %args) = @_;
     
@@ -50,7 +52,9 @@ sub run {
             $self->_sleep($self->{spawn_interval});
         }
         while (not $self->{term_received}) {
+            warn "*** ", scalar threads->list, " running threads" if DEBUG;
             foreach my $thr (threads->list(threads::joinable)) {
+                warn "*** wait for thread ", $thr->tid if DEBUG;
                 $thr->join;
                 $self->_create_thread($app);
                 $self->_sleep($self->{spawn_interval});
@@ -78,7 +82,9 @@ sub _create_thread {
     my $thr = threads->create(
         sub {
             my ($self, $app) = @_;
+            warn "*** thread ", threads->tid, " starting" if DEBUG;
             $self->accept_loop($app, $self->_calc_reqs_per_child());
+            warn "*** thread ", threads->tid, " ending" if DEBUG;
         },
         $self, $app
     );
