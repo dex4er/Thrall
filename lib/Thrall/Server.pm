@@ -101,7 +101,7 @@ sub accept_loop {
         # warn "server termination delayed while handling current HTTP request";
     };
 
-    local $SIG{PIPE} = 'IGNORE';
+    local $SIG{PIPE} = sub { 'IGNORE' };
 
     while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
         if (my $conn = $self->{listen_sock}->accept) {

@@ -30,6 +30,7 @@ sub new {
 sub run {
     my($self, $app) = @_;
     $self->setup_listener();
+    local $SIG{PIPE} = sub { 'IGNORE' };
     if ($self->{max_workers} != 0) {
         local $SIG{TERM} = sub {
             foreach my $thr (threads->list) {
