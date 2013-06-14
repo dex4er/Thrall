@@ -59,7 +59,12 @@ between the value and that supplied by C<--max-reqs-per-chlid> (default: none)
 if set, worker processes will not be spawned more than once than every given
 seconds.  Also, when SIGHUP is being received, no more than one worker
 processes will be collected every given seconds.  This feature is useful for
-doing a "slow-restart". (dedault: none)
+doing a "slow-restart". (default: none)
+
+=item --main-thread-delay=#
+
+the Thrall does not use signals or semaphores and it requires a small delay in
+main thread so it doesn't consume all CPU. (default: 0.1)
 
 =back
 

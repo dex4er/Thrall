@@ -61,7 +61,7 @@ sub run {
                 $self->_sleep($self->{spawn_interval});
             }
             # slow down main thread
-            $self->_sleep(0.1);
+            $self->_sleep($self->{main_thread_delay});
         }
     } else {
         # run directly, mainly for debugging

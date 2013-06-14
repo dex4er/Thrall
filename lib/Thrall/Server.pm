@@ -47,6 +47,7 @@ sub new {
             defined $args{err_respawn_interval}
                 ? $args{err_respawn_interval} : undef,
         ),
+        main_thread_delay    => $args{main_thread_delay} || 0.1,
         is_multiprocess      => Plack::Util::FALSE,
         _using_defer_accept  => undef,
     }, $class;
