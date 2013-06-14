@@ -48,7 +48,7 @@ sub new {
                 ? $args{err_respawn_interval} : undef,
         ),
         main_thread_delay    => $args{main_thread_delay} || 0.1,
-        is_multiprocess      => Plack::Util::FALSE,
+        is_multithread       => Plack::Util::FALSE,
         _using_defer_accept  => undef,
     }, $class;
 
@@ -125,8 +125,8 @@ sub accept_loop {
                     'psgi.errors'  => *STDERR,
                     'psgi.url_scheme' => 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,
-                    'psgi.multithread'  => Plack::Util::FALSE,
-                    'psgi.multiprocess' => $self->{is_multiprocess},
+                    'psgi.multithread'  => $self->{is_multithread},
+                    'psgi.multiprocess' => Plack::Util::FALSE,
                     'psgi.streaming'    => Plack::Util::TRUE,
                     'psgi.nonblocking'  => Plack::Util::FALSE,
                     'psgix.input.buffered' => Plack::Util::TRUE,

@@ -22,7 +22,7 @@ sub new {
     
     # instantiate and set the variables
     my $self = $klass->SUPER::new(%args);
-    $self->{is_multiprocess} = 1;
+    $self->{is_multithread} = 1;
     $self->{listen_sock} = $listen_sock
         if $listen_sock;
     $self->{max_workers} = $max_workers;
