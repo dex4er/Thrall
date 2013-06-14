@@ -7,7 +7,7 @@ use base qw(Thrall::Server);
 
 use threads;
 
-use constant DEBUG => $ENV{DEBUG};
+use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
 
 sub new {
     my ($klass, %args) = @_;
@@ -53,7 +53,7 @@ sub run {
             $self->_sleep($self->{spawn_interval});
         }
         while (not $self->{term_received}) {
-            warn "*** ", scalar threads->list, " running threads" if DEBUG;
+            warn "*** running ", scalar threads->list, " threads" if DEBUG;
             foreach my $thr (threads->list(threads::joinable)) {
                 warn "*** wait for thread ", $thr->tid if DEBUG;
                 $thr->join;
