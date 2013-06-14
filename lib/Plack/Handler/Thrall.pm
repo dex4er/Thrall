@@ -3,6 +3,8 @@ package Plack::Handler::Thrall;
 use strict;
 use warnings;
 
+our $VERSION = '0.01';
+
 use base qw(Thrall::Server);
 
 use threads;
