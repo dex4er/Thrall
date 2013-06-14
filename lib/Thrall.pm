@@ -2,9 +2,13 @@ package Thrall;
 
 use 5.008_001;
 
+use strict;
+use warnings;
+
 our $VERSION = '0.01';
 
 1;
+
 __END__
 
 =head1 NAME
