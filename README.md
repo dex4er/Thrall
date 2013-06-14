@@ -48,11 +48,16 @@ options(s).
     if set, worker processes will not be spawned more than once than every given
     seconds.  Also, when SIGHUP is being received, no more than one worker
     processes will be collected every given seconds.  This feature is useful for
-    doing a "slow-restart". (dedault: none)
+    doing a "slow-restart". (default: none)
+
+- \--main-thread-delay=\#
+
+    the Thrall does not use signals or semaphores and it requires a small delay in
+    main thread so it doesn't consume all CPU. (default: 0.1)
 
 # NOTES
 
-Trall was started as a fork of [Starlet](http://search.cpan.org/perldoc?Starlet) server. It has almost the same code
+Thrall was started as a fork of [Starlet](http://search.cpan.org/perldoc?Starlet) server. It has almost the same code
 as [Starlet](http://search.cpan.org/perldoc?Starlet) and it was adapted to use threads instead fork().
 
 # SEE ALSO

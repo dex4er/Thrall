@@ -1,16 +1,5 @@
 package Thrall;
 
-use 5.008_001;
-
-use strict;
-use warnings;
-
-our $VERSION = '0.01';
-
-1;
-
-__END__
-
 =head1 NAME
 
 Thrall - a simple PSGI/Plack HTTP server which uses threads
@@ -23,6 +12,23 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 
 Thrall is a standalone HTTP/1.0 server with keep-alive support. It uses
 threads instead pre-forking, so it works correctly on Windows.
+
+=for readme stop
+
+=cut
+
+
+use 5.008_001;
+
+use strict;
+use warnings;
+
+our $VERSION = '0.01';
+
+1;
+
+
+__END__
 
 =head1 COMMAND LINE OPTIONS
 
@@ -71,6 +77,8 @@ the Thrall does not use signals or semaphores and it requires a small delay in
 main thread so it doesn't consume all CPU. (default: 0.1)
 
 =back
+
+=for readme continue
 
 =head1 NOTES
 
