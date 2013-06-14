@@ -21,6 +21,7 @@ my $build = Module::Build::My->new(
         'Plack'                 => 0.9920,
     },
     build_requires          => {
+        'HTTP::Tiny'            => 0,
         'Test::More'            => 0.88,
         'Test::TCP'             => 0.15,
     },
