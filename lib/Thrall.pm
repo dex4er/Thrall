@@ -74,7 +74,7 @@ main thread so it doesn't consume all CPU. (default: 0.1)
 
 =head1 NOTES
 
-Trall was started as a fork of L<Starlet> server. It has almost the same code
+Thrall was started as a fork of L<Starlet> server. It has almost the same code
 as L<Starlet> and it was adapted to use threads instead fork().
 
 =head1 SEE ALSO
