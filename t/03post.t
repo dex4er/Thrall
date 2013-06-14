@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use LWP::UserAgent;
+use HTTP::Tiny;
 use Plack::Runner;
 use Test::More;
 use Test::TCP;
@@ -49,12 +49,11 @@ Content-Length: 6\r
 EOT
         undef $sock;
         note 'send next request';
-        my $ua = LWP::UserAgent->new;
-        $ua->timeout(10);
-        my $res = $ua->post("http://127.0.0.1:$port/", { a => 1 });
-        ok $res->is_success;
-        is $res->code, 200;
-        is $res->content, 'a=1';
+        my $ua = HTTP::Tiny->new( timeout => 10 );
+        my $res = $ua->post_form("http://127.0.0.1:$port/", { a => 1 });
+        ok $res->{success};
+        is $res->{status}, 200;
+        is $res->{content}, 'a=1';
     },
 );
 

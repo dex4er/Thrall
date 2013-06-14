@@ -2,23 +2,23 @@ use strict;
 use warnings;
 use Test::More;
 use Test::TCP;
-use LWP::UserAgent;
+use HTTP::Tiny;
 use Plack::Loader;
 
 test_tcp(
     client => sub {
         my $port = shift;
         sleep 1;
-        my $ua = LWP::UserAgent->new;
+        my $ua = HTTP::Tiny->new;
         my $res = $ua->get("http://localhost:$port/");
-        ok( $res->is_success );
-        like( scalar $res->header('Server'), qr/Thrall/ );
-        unlike( scalar $res->header('Server'), qr/Hello/ );
+        ok( $res->{success} );
+        like( scalar $res->{headers}{server}, qr/Thrall/ );
+        unlike( scalar $res->{headers}{server}, qr/Hello/ );
 
         $res = $ua->get("http://localhost:$port/?server=1");
-        ok( $res->is_success );
-        unlike( scalar $res->header('Server'), qr/Thrall/ );
-        like( scalar $res->header('Server'), qr/Hello/ );
+        ok( $res->{success} );
+        unlike( scalar $res->{headers}{server}, qr/Thrall/ );
+        like( scalar $res->{headers}{server}, qr/Hello/ );
 
     },
     server => sub {

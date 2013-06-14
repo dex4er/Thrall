@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::TCP;
-use LWP::UserAgent;
 use IO::Socket::INET;
 use Plack::Loader;
 
