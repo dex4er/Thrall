@@ -13,7 +13,7 @@ use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
 
 sub new {
     my ($klass, %args) = @_;
-    
+
     # setup before instantiation
     my $listen_sock;
     my $max_workers = 10;
@@ -21,14 +21,14 @@ sub new {
         $max_workers = delete $args{$_}
             if defined $args{$_};
     }
-    
+
     # instantiate and set the variables
     my $self = $klass->SUPER::new(%args);
     $self->{is_multithread} = 1;
     $self->{listen_sock} = $listen_sock
         if $listen_sock;
     $self->{max_workers} = $max_workers;
-    
+
     $self;
 }
 

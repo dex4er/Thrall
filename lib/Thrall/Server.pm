@@ -153,10 +153,10 @@ sub accept_loop {
 
 sub handle_connection {
     my($self, $env, $conn, $app, $use_keepalive, $is_keepalive) = @_;
-    
+
     my $buf = '';
     my $res = [ 400, [ 'Content-Type' => 'text/plain' ], [ 'Bad Request' ] ];
-    
+
     local $self->{can_exit} = 1;
     while (1) {
         my $rlen = $self->read_timeout(
@@ -219,7 +219,7 @@ sub handle_connection {
     if ($self->{term_received}) {
         threads->exit;
     }
-    
+
     return $use_keepalive;
 }
 
@@ -228,7 +228,7 @@ sub _handle_response {
     my $status_code = $res->[0];
     my $headers = $res->[1];
     my $body = $res->[2];
-    
+
     my @lines;
     my %send_headers;
     for (my $i = 0; $i < @$headers; $i += 2) {
@@ -266,7 +266,7 @@ sub _handle_response {
     }
     unshift @lines, "HTTP/1.0 $status_code @{[ HTTP::Status::status_message($status_code) ]}\015\012";
     push @lines, "\015\012";
-    
+
     if (defined $body && ref $body eq 'ARRAY' && @$body == 1
             && length $body->[0] < 8192) {
         # combine response header and small request body
