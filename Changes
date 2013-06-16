@@ -1,4 +1,9 @@
 ------------------------------------------------------------------------
+0.0101    2013-06-15      Piotr Roszatycki <dexter@cpan.org>
+
+* Build.PL checks if threads are available.
+
+------------------------------------------------------------------------
 0.01    2013-06-15      Piotr Roszatycki <dexter@cpan.org>
 
 * First CPAN release.

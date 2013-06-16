@@ -5,6 +5,8 @@ use 5.006;
 use strict;
 use warnings;
 
+use threads;
+
 use lib 'inc';
 use Module::Build::My;
 
