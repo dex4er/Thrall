@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------
 0.0102  UNRELEASED      Piotr Roszatycki <dexter@cpan.org>
 
-*
+* Handle errors in threads and convert them into warnings.
 
 ------------------------------------------------------------------------
 0.0101  2013-06-15      Piotr Roszatycki <dexter@cpan.org>

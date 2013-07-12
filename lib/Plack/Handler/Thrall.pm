@@ -58,7 +58,10 @@ sub run {
             warn "*** running ", scalar threads->list, " threads" if DEBUG;
             foreach my $thr (threads->list(threads::joinable)) {
                 warn "*** wait for thread ", $thr->tid if DEBUG;
-                $thr->join;
+                eval {
+                    $thr->join;
+                };
+                warn $@ if $@;
                 $self->_create_thread($app);
                 $self->_sleep($self->{spawn_interval});
             }
@@ -86,7 +89,10 @@ sub _create_thread {
         sub {
             my ($self, $app) = @_;
             warn "*** thread ", threads->tid, " starting" if DEBUG;
-            $self->accept_loop($app, $self->_calc_reqs_per_child());
+            eval {
+                $self->accept_loop($app, $self->_calc_reqs_per_child());
+            };
+            warn $@ if $@;
             warn "*** thread ", threads->tid, " ending" if DEBUG;
         },
         $self, $app
