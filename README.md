@@ -36,7 +36,7 @@ options(s).
 - \--max-reqs-per-child=\#
 
     max. number of requests to be handled before a worker process exits (default:
-    100)
+    1000)
 
 - \--min-reqs-per-child=\#
 

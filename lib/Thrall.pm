@@ -57,7 +57,7 @@ one, persistent connections are disabled (default: 1)
 =item --max-reqs-per-child=#
 
 max. number of requests to be handled before a worker process exits (default:
-100)
+1000)
 
 =item --min-reqs-per-child=#
 
