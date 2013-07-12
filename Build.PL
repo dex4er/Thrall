@@ -5,10 +5,10 @@ use 5.006;
 use strict;
 use warnings;
 
-use threads;
-
 use lib 'inc';
 use Module::Build::My;
+
+use Config;
 
 my $module = 'Thrall';
 
@@ -19,7 +19,7 @@ my $build = Module::Build::My->new(
     license                 => 'perl',
     requires                => {
         'perl'                  => 5.008_001,
-        'threads',              => 0,
+        $Config{useithreads} ? 'threads' : 'forks' => 0,
         'Plack'                 => 0.9920,
     },
     build_requires          => {

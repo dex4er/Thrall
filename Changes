@@ -3,6 +3,7 @@
 
 * Handles errors in threads and converts them into warnings.
 * Increased default max-reqs-per-child to 1000.
+* Supports forks if threads are unavailable.
 
 ------------------------------------------------------------------------
 0.0101  2013-06-15      Piotr Roszatycki <dexter@cpan.org>

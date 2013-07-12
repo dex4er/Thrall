@@ -24,7 +24,16 @@ sub new {
 
     # instantiate and set the variables
     my $self = $klass->SUPER::new(%args);
-    $self->{is_multithread} = 1;
+    if (threads->can('isthread')) {
+        # forks as threads emulation
+        $self->{is_multithread}  = 0;
+        $self->{is_multiprocess} = 1;
+    }
+    else {
+        # real threads
+        $self->{is_multithread}  = 1;
+        $self->{is_multiprocess} = 0;
+    };
     $self->{listen_sock} = $listen_sock
         if $listen_sock;
     $self->{max_workers} = $max_workers;
