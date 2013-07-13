@@ -7,8 +7,6 @@ our $VERSION = '0.0102';
 
 use base qw(Thrall::Server);
 
-use threads;
-
 use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
 
 sub new {

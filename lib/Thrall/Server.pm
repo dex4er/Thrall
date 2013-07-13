@@ -5,6 +5,9 @@ use warnings;
 
 our $VERSION = '0.0102';
 
+use Config;
+use if ! $Config{useithreads}, 'forks';
+
 use threads;
 
 use Carp ();
