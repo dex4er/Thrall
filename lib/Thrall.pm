@@ -92,6 +92,14 @@ L<Starman>
 
 =head1 BUGS
 
+There is a problem with Perl implementation on Windows XP/Vista/7. Some
+requests can fail with message:
+
+  failed to set socket to nonblocking mode:An operation was attempted on
+  something that is not a socket.
+
+Perl on Windows 8 works correctly.
+
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/Thrall/issues>
 
