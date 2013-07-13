@@ -1,9 +1,10 @@
 ------------------------------------------------------------------------
 0.0102  UNRELEASED      Piotr Roszatycki <dexter@cpan.org>
 
-* Handles errors in threads and converts them into warnings.
 * Increased default max-reqs-per-child to 1000.
 * Supports forks if threads are unavailable.
+* Increased stability on Windows XP and 7.
+* Handles errors in threads and converts them into warnings.
 
 ------------------------------------------------------------------------
 0.0101  2013-06-15      Piotr Roszatycki <dexter@cpan.org>

@@ -112,6 +112,7 @@ sub accept_loop {
     local $SIG{PIPE} = sub { 'IGNORE' };
 
     while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
+        threads->yield;
         if (my $conn = $self->{listen_sock}->accept) {
             $self->{_is_deferred_accept} = $self->{_using_defer_accept};
             $conn->blocking(0)
