@@ -3,6 +3,7 @@
 
 * Increased default max-reqs-per-child to 1000.
 * Supports forks if threads are unavailable.
+* More detailed Server header.
 * Increased stability on Windows XP and 7.
 * Handles errors in threads and converts them into warnings.
 
