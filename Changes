@@ -2,6 +2,7 @@
 0.0102  UNRELEASED      Piotr Roszatycki <dexter@cpan.org>
 
 * Increased default max-reqs-per-child to 1000.
+* Supports psgix.harakiri mode.
 * Supports forks if threads are unavailable.
 * More detailed Server header.
 * Increased stability on Windows XP and 7.
