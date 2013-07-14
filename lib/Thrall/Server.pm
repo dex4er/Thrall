@@ -139,7 +139,7 @@ sub accept_loop {
                     'psgi.nonblocking'  => Plack::Util::FALSE,
                     'psgix.input.buffered' => Plack::Util::TRUE,
                     'psgix.io'          => $conn,
-                    'psgix.harakiri'    => 1,
+                    'psgix.harakiri'    => Plack::Util::TRUE,
                 };
 
                 # no need to take care of pipelining since this module is a HTTP/1.0 server

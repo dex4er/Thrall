@@ -7,6 +7,9 @@ our $VERSION = '0.0102';
 
 use base qw(Thrall::Server);
 
+use threads;
+use Plack::Util;
+
 use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
 
 sub new {
@@ -24,13 +27,13 @@ sub new {
     my $self = $klass->SUPER::new(%args);
     if (threads->can('isthread')) {
         # forks as threads emulation
-        $self->{is_multithread}  = 0;
-        $self->{is_multiprocess} = 1;
+        $self->{is_multithread}  = Plack::Util::FALSE;
+        $self->{is_multiprocess} = Plack::Util::TRUE;
     }
     else {
         # real threads
-        $self->{is_multithread}  = 1;
-        $self->{is_multiprocess} = 0;
+        $self->{is_multithread}  = Plack::Util::TRUE;
+        $self->{is_multiprocess} = Plack::Util::FALSE;
     };
     $self->{listen_sock} = $listen_sock
         if $listen_sock;
