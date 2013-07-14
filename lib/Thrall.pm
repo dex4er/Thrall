@@ -6,7 +6,7 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 
 =head1 SYNOPSIS
 
-  % plackup -s Thrall --port=80 [options] your-app.psgi
+  $ plackup -s Thrall --port=80 [options] your-app.psgi
 
 =head1 DESCRIPTION
 

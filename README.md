@@ -4,7 +4,7 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 
 # SYNOPSIS
 
-    % plackup -s Thrall --port=80 [options] your-app.psgi
+    $ plackup -s Thrall --port=80 [options] your-app.psgi
 
 # DESCRIPTION
 
@@ -66,6 +66,14 @@ as [Starlet](http://search.cpan.org/perldoc?Starlet) and it was adapted to use t
 [Starman](http://search.cpan.org/perldoc?Starman)
 
 # BUGS
+
+There is a problem with Perl implementation on Windows XP/Vista/7. Some
+requests can fail with message:
+
+    failed to set socket to nonblocking mode:An operation was attempted on
+    something that is not a socket.
+
+Perl on Windows 8 works correctly.
 
 If you find the bug or want to implement new features, please report it at
 [https://github.com/dex4er/Thrall/issues](https://github.com/dex4er/Thrall/issues)

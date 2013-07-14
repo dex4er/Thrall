@@ -2,7 +2,7 @@ NAME
     Thrall - a simple PSGI/Plack HTTP server which uses threads
 
 SYNOPSIS
-      % plackup -s Thrall --port=80 [options] your-app.psgi
+      $ plackup -s Thrall --port=80 [options] your-app.psgi
 
 DESCRIPTION
     Thrall is a standalone HTTP/1.0 server with keep-alive support. It uses
@@ -16,6 +16,14 @@ SEE ALSO
     Starlet, Starman
 
 BUGS
+    There is a problem with Perl implementation on Windows XP/Vista/7. Some
+    requests can fail with message:
+
+      failed to set socket to nonblocking mode:An operation was attempted on
+      something that is not a socket.
+
+    Perl on Windows 8 works correctly.
+
     If you find the bug or want to implement new features, please report it
     at https://github.com/dex4er/Thrall/issues
 
