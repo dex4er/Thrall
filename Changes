@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-0.0102  UNRELEASED      Piotr Roszatycki <dexter@cpan.org>
+0.0102  2013-07-14      Piotr Roszatycki <dexter@cpan.org>
 
 * Increased default max-reqs-per-child to 1000.
 * Supports psgix.harakiri mode.
