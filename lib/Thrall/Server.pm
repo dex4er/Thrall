@@ -25,8 +25,8 @@ use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Try::Tiny;
 use Time::HiRes qw(time);
 
+use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
 use constant MAX_REQUEST_SIZE => 131072;
-use constant MSWin32          => $^O eq 'MSWin32';
 
 my $null_io = do { open my $io, "<", \""; $io }; #"
 
@@ -101,13 +101,6 @@ sub accept_loop {
 
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
-    local $SIG{TERM} = sub {
-        threads->exit if $self->{can_exit};
-        $self->{term_received}++;
-        threads->exit
-            if ($is_keepalive && $self->{can_exit}) || $self->{term_received} > 1;
-        # warn "server termination delayed while handling current HTTP request";
-    };
 
     local $SIG{PIPE} = sub { 'IGNORE' };
 

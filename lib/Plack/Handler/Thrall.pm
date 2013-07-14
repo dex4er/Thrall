@@ -39,6 +39,8 @@ sub new {
         if $listen_sock;
     $self->{max_workers} = $max_workers;
 
+    $self->{main_thread} = threads->self;
+
     $self;
 }
 
@@ -55,10 +57,14 @@ sub run {
 
     if ($self->{max_workers} != 0) {
         local $SIG{TERM} = sub {
-            foreach my $thr (threads->list) {
-                $thr->kill('TERM')->detach;
-            }
+            warn "*** SIGTERM received in thread ", threads->tid if DEBUG;
             $self->{term_received}++;
+            if (threads->tid) {
+                $self->{main_thread}->kill('TERM');
+                foreach my $thr (threads->list(threads::running)) {
+                    $thr->kill('TERM') if $thr->tid != threads->tid;
+                }
+            }
         };
         foreach my $n (1 .. $self->{max_workers}) {
             $self->_create_thread($app);
@@ -77,6 +83,9 @@ sub run {
             }
             # slow down main thread
             $self->_sleep($self->{main_thread_delay});
+        }
+        foreach my $thr (threads->list) {
+            $thr->detach;
         }
     } else {
         # run directly, mainly for debugging
