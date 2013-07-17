@@ -6,7 +6,10 @@ use Plack::Runner;
 use Test::More;
 use Test::TCP;
 
-warn $$;
+if ($^O =~ /^(MSWin32|cygwin)$/) {
+    plan skip_all => 'TCP tests on Windows';
+    exit 0;
+}
 
 test_tcp(
     server => sub {

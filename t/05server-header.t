@@ -5,6 +5,11 @@ use Test::TCP;
 use HTTP::Tiny;
 use Plack::Loader;
 
+if ($^O =~ /^(MSWin32|cygwin)$/) {
+    plan skip_all => 'TCP tests on Windows';
+    exit 0;
+}
+
 test_tcp(
     client => sub {
         my $port = shift;

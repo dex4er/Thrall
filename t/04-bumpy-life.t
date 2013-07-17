@@ -5,6 +5,11 @@ use Plack::Loader;
 use Test::More;
 use Test::TCP qw(empty_port);
 
+if ($^O =~ /^(MSWin32|cygwin)$/) {
+    plan skip_all => 'TCP tests on Windows';
+    exit 0;
+}
+
 my $thrall = Plack::Loader->load(
     'Thrall',
     min_reqs_per_child => 5,

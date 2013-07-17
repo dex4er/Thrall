@@ -3,6 +3,8 @@
 
 * Non joined threads are detached. It might increase stability on
   Windows.
+* Tests are skipped on Windows because of broken Test::TCP on this
+  platform.
 
 ------------------------------------------------------------------------
 0.0102  2013-07-14      Piotr Roszatycki <dexter@cpan.org>
