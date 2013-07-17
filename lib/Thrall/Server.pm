@@ -3,7 +3,7 @@ package Thrall::Server;
 use strict;
 use warnings;
 
-our $VERSION = '0.0102';
+our $VERSION = '0.0103';
 
 use Config;
 use if ! $Config{useithreads}, 'forks';

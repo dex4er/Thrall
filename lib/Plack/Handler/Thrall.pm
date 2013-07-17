@@ -3,7 +3,7 @@ package Plack::Handler::Thrall;
 use strict;
 use warnings;
 
-our $VERSION = '0.0102';
+our $VERSION = '0.0103';
 
 use base qw(Thrall::Server);
 
