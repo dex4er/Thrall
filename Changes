@@ -3,6 +3,8 @@
 
 * Non joined threads are detached. It might increase stability on
   Windows.
+* The default loader is Delayed because of problems with preloaded apps by
+  threaded server.
 * Tests are skipped on Windows because of broken Test::TCP on this
   platform.
 
