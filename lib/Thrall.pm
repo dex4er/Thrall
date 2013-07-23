@@ -76,6 +76,10 @@ doing a "slow-restart". (default: none)
 the Thrall does not use signals or semaphores and it requires a small delay in
 main thread so it doesn't consume all CPU. (default: 0.1)
 
+=item --thread-stack-size=#
+
+sets a new default per-thread stack size. (default: none)
+
 =back
 
 =for readme continue
