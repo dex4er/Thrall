@@ -56,6 +56,7 @@ sub run {
     local $SIG{PIPE} = sub { 'IGNORE' };
 
     if ($self->{max_workers} != 0) {
+        threads->set_stack_size($self->{thread_stack_size});
         local $SIG{TERM} = sub {
             my ($sig) = @_;
             warn "*** SIG$sig received in thread ", threads->tid if DEBUG;

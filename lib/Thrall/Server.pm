@@ -54,6 +54,10 @@ sub new {
                 ? $args{err_respawn_interval} : undef,
         ),
         main_thread_delay    => $args{main_thread_delay} || 0.1,
+        thread_stack_size    => (
+            defined $args{thread_stack_size}
+                ? $args{thread_stack_size} : undef,
+        ),
         is_multithread       => Plack::Util::FALSE,
         is_multiprocess      => Plack::Util::FALSE,
         _using_defer_accept  => undef,

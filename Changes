@@ -5,6 +5,7 @@
   Windows.
 * The default loader is Delayed because of problems with preloaded apps by
   threaded server.
+* New option --thread-stack-size sets a new default per-thread stack size.
 * Tests are skipped on Windows because of broken Test::TCP on this
   platform.
 
