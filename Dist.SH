@@ -9,7 +9,7 @@ test -x Build && ./Build distclean
 $PERL Build.PL
 
 rm -f MANIFEST
-pod2markdown < lib/$(grep ^name: MYMETA.yml | sed 's/^name: //; s,-,/,g').pm > README.md
+$PERL -MPod::Markdown -e '$p=Pod::Markdown->new;$p->parse_from_filehandle(\*STDIN);print $p->as_markdown' < lib/$(grep ^name: MYMETA.yml | sed 's/^name: //; s,-,/,g').pm > README.md
 
 $PERL Build manifest
 
