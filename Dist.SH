@@ -21,7 +21,7 @@ cd *-[0-9]*.[0-9]*
 $PERL Build.PL
 $PERL Build
 $PERL Build test
-$PERL -MApp::Prove -e '$app=App::Prove->new; $app->process_args(qw(-Iblib/lib xt)); $app->run;'
+$PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib xt));exit($a->run ? 0 : 1)'
 
 $PERL Build distsign
 diff -u -I^SIGNATURE MANIFEST *-[0-9]*.[0-9]*/MANIFEST
