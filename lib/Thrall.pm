@@ -94,7 +94,7 @@ as L<Starlet> and it was adapted to use threads instead fork().
 L<Starlet>,
 L<Starman>
 
-=head1 BUGS
+=head1 LIMITATIONS
 
 There is a problem with Perl implementation on Windows XP/Vista/7. Some
 requests can fail with message:
@@ -102,7 +102,20 @@ requests can fail with message:
   failed to set socket to nonblocking mode:An operation was attempted on
   something that is not a socket.
 
-Perl on Windows 8 works correctly.
+Perl on Windows 8 works correctly. Also Cygwin version seems to be correct.
+
+See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> for more
+informations about this issue.
+
+See L<threads/"BUGS AND LIMITATIONS"> and L<perlthrtut/"Thread-Safety of
+System Libraries"> to read about limitations for PSGI applications started
+with Thrall and check if you encountered a known problem.
+
+Especially, PSGI applications should avoid: changing current working
+directory, catching signals, staring new processes. Environment variables
+might (Linux, Unix) or might not (Windows) be shared between threads.
+
+=head1 BUGS
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/Thrall/issues>
