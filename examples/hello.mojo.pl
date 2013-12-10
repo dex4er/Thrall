@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# Simple Mojolicious application
+
 use Mojolicious::Lite;
 
 get '/' => 'main';

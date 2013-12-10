@@ -1,9 +1,13 @@
 #!/usr/bin/perl
 
-use YAML::XS;
+# Simple PSGI application
+
+use Data::Dumper;
+
+$Data::Dumper::Sortkeys = 1;
 
 sub {
-    my $dump = Dump @_;
+    my $dump = Dumper @_;
 
     return [ 200, [ "Content-Type" => "text/plain", "Content-Length" => length($dump) ], [ $dump ] ];
 };
