@@ -1,5 +1,4 @@
-------------------------------------------------------------------------
-0.0103  UNRELEASED      Piotr Roszatycki <dexter@cpan.org>
+0.0103  2013-12-10      Piotr Roszatycki <dexter@cpan.org>
 
 * Non joined threads are detached. It might increase stability on
   Windows.
@@ -9,7 +8,6 @@
 * Tests are skipped on Windows because of broken Test::TCP on this
   platform.
 
-------------------------------------------------------------------------
 0.0102  2013-07-14      Piotr Roszatycki <dexter@cpan.org>
 
 * Increased default max-reqs-per-child to 1000.
@@ -19,14 +17,10 @@
 * Increased stability on Windows XP and 7.
 * Handles errors in threads and converts them into warnings.
 
-------------------------------------------------------------------------
 0.0101  2013-06-15      Piotr Roszatycki <dexter@cpan.org>
 
 * Build.PL checks if threads are available.
 
-------------------------------------------------------------------------
 0.01    2013-06-15      Piotr Roszatycki <dexter@cpan.org>
 
 * First CPAN release.
-
-------------------------------------------------------------------------

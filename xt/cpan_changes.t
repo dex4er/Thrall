@@ -2,5 +2,5 @@
 
 use Test::More;
 use Test::CPAN::Changes;
-changes_ok();
+changes_file_ok();
 done_testing();

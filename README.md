@@ -13,7 +13,7 @@ threads instead pre-forking, so it works correctly on Windows.
 
 # COMMAND LINE OPTIONS
 
-In addition to the options supported by [plackup](http://metacpan.org/module/plackup), Thrall accepts following
+In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), Thrall accepts following
 options(s).
 
 - \--max-workers=\#
@@ -61,13 +61,13 @@ options(s).
 
 # NOTES
 
-Thrall was started as a fork of [Starlet](http://metacpan.org/module/Starlet) server. It has almost the same code
-as [Starlet](http://metacpan.org/module/Starlet) and it was adapted to use threads instead fork().
+Thrall was started as a fork of [Starlet](https://metacpan.org/pod/Starlet) server. It has almost the same code
+as [Starlet](https://metacpan.org/pod/Starlet) and it was adapted to use threads instead fork().
 
 # SEE ALSO
 
-[Starlet](http://metacpan.org/module/Starlet),
-[Starman](http://metacpan.org/module/Starman)
+[Starlet](https://metacpan.org/pod/Starlet),
+[Starman](https://metacpan.org/pod/Starman)
 
 # LIMITATIONS
 
@@ -82,7 +82,7 @@ Perl on Windows 8 works correctly. Also Cygwin version seems to be correct.
 See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003) for more
 informations about this issue.
 
-See ["BUGS AND LIMITATIONS" in threads](http://metacpan.org/module/threads#BUGS-AND-LIMITATIONS) and ["Thread-Safety of System Libraries" in perlthrtut](http://metacpan.org/module/perlthrtut#Thread-Safety-of-System-Libraries) to read about limitations for PSGI applications started
+See ["BUGS AND LIMITATIONS" in threads](https://metacpan.org/pod/threads#BUGS-AND-LIMITATIONS) and ["Thread-Safety of System Libraries" in perlthrtut](https://metacpan.org/pod/perlthrtut#Thread-Safety-of-System-Libraries) to read about limitations for PSGI applications started
 with Thrall and check if you encountered a known problem.
 
 Especially, PSGI applications should avoid: changing current working
