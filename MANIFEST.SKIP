@@ -8,6 +8,7 @@
 \B\.gitignore$
 \B\.bzr\b
 \B\.bzrignore$
+\B\.travis.yml$
 
 # Avoid Makemaker generated and utility files.
 \bMakefile$

@@ -1,0 +1,14 @@
+language: perl
+before_install:
+  - sudo apt-get update -qq
+install:
+  - sudo apt-get install -qq spell
+  - cpanm --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton
+  - cpanm --with-recommends --installdeps --notest --skip-satisfied .
+script: ./Dist.SH
+perl:
+  - 5.8
+  - 5.18
+branch:
+  only:
+    - master
