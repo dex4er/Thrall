@@ -6,7 +6,8 @@ SYNOPSIS
 
 DESCRIPTION
     Thrall is a standalone HTTP/1.0 server with keep-alive support. It uses
-    threads instead pre-forking, so it works correctly on Windows.
+    threads instead pre-forking, so it works correctly on Windows. It is
+    pure-Perl implementation which doesn't require any XS package.
 
 NOTES
     Thrall was started as a fork of Starlet server. It has almost the same
@@ -26,14 +27,14 @@ LIMITATIONS
     correct.
 
     See https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003 for more
-    informations about this issue.
+    information about this issue.
 
     See threads and perlthrtut to read about limitations for PSGI
     applications started with Thrall and check if you encountered a known
     problem.
 
     Especially, PSGI applications should avoid: changing current working
-    directory, catching signals, staring new processes. Environment
+    directory, catching signals, starting new processes. Environment
     variables might (Linux, Unix) or might not (Windows) be shared between
     threads.
 

@@ -9,7 +9,8 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 # DESCRIPTION
 
 Thrall is a standalone HTTP/1.0 server with keep-alive support. It uses
-threads instead pre-forking, so it works correctly on Windows.
+threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
+implementation which doesn't require any XS package.
 
 # COMMAND LINE OPTIONS
 
@@ -80,13 +81,13 @@ requests can fail with message:
 Perl on Windows 8 works correctly. Also Cygwin version seems to be correct.
 
 See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003) for more
-informations about this issue.
+information about this issue.
 
 See ["BUGS AND LIMITATIONS" in threads](https://metacpan.org/pod/threads#BUGS-AND-LIMITATIONS) and ["Thread-Safety of System Libraries" in perlthrtut](https://metacpan.org/pod/perlthrtut#Thread-Safety-of-System-Libraries) to read about limitations for PSGI applications started
 with Thrall and check if you encountered a known problem.
 
 Especially, PSGI applications should avoid: changing current working
-directory, catching signals, staring new processes. Environment variables
+directory, catching signals, starting new processes. Environment variables
 might (Linux, Unix) or might not (Windows) be shared between threads.
 
 # BUGS
