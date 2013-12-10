@@ -112,7 +112,7 @@ System Libraries"> to read about limitations for PSGI applications started
 with Thrall and check if you encountered a known problem.
 
 Especially, PSGI applications should avoid: changing current working
-directory, catching signals, staring new processes. Environment variables
+directory, catching signals, starting new processes. Environment variables
 might (Linux, Unix) or might not (Windows) be shared between threads.
 
 =head1 BUGS
