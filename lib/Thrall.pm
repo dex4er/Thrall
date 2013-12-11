@@ -24,7 +24,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0103';
+our $VERSION = '0.0200';
 
 1;
 
@@ -129,13 +129,17 @@ L<https://github.com/dex4er/Thrall/issues>
 The code repository is available at
 L<http://github.com/dex4er/Thrall>
 
-=head1 AUTHOR
+=head1 AUTHORS
+
+Piotr Roszatycki <dexter@cpan.org>
+
+Based on Starlet by:
 
 Kazuho Oku
 
 miyagawa
 
-Piotr Roszatycki <dexter@cpan.org>
+kazeburo
 
 =head1 LICENSE
 

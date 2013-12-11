@@ -3,7 +3,7 @@ package Thrall::Server;
 use strict;
 use warnings;
 
-our $VERSION = '0.0103';
+our $VERSION = '0.0200';
 
 use Config;
 use if ! $Config{useithreads}, 'forks';
@@ -25,7 +25,8 @@ use Socket qw(IPPROTO_TCP TCP_NODELAY);
 use Try::Tiny;
 use Time::HiRes qw(time);
 
-use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
+use constant DEBUG            => $ENV{PERL_THRALL_DEBUG};
+use constant CHUNKSIZE        => 64 * 1024;
 use constant MAX_REQUEST_SIZE => 131072;
 
 my $null_io = do { open my $io, "<", \""; $io }; #"
@@ -89,8 +90,11 @@ sub setup_listener {
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
 
+    my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
+    $self->{_listen_sock_is_tcp} = $family != AF_UNIX;
+
     # set defer accept
-    if ($^O eq 'linux') {
+    if ($^O eq 'linux' && $self->{_listen_sock_is_tcp}) {
         setsockopt($self->{listen_sock}, IPPROTO_TCP, 9, 1)
             and $self->{_using_defer_accept} = 1;
     }
@@ -110,22 +114,28 @@ sub accept_loop {
 
     while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {
         threads->yield;
-        if (my $conn = $self->{listen_sock}->accept) {
+        if (my ($conn,$peer) = $self->{listen_sock}->accept) {
             $self->{_is_deferred_accept} = $self->{_using_defer_accept};
             $conn->blocking(0)
                 or die "failed to set socket to nonblocking mode:$!";
-            $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-                or die "setsockopt(TCP_NODELAY) failed:$!";
+            my ($peerport, $peerhost, $peeraddr) = (0, undef, undef);
+            if ($self->{_listen_sock_is_tcp}) {
+                $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
+                    or die "setsockopt(TCP_NODELAY) failed:$!";
+                ($peerport, $peerhost) = unpack_sockaddr_in $peer;
+                $peeraddr = inet_ntoa($peerhost);
+            }
             my $req_count = 0;
+            my $pipelined_buf = '';
             while (1) {
                 ++$req_count;
                 ++$proc_req_count;
                 my $env = {
-                    SERVER_PORT => $self->{port},
-                    SERVER_NAME => $self->{host},
+                    SERVER_PORT => $self->{port} || 0,
+                    SERVER_NAME => $self->{host} || 'localhost',
                     SCRIPT_NAME => '',
-                    REMOTE_ADDR => $conn->peerhost,
-                    REMOTE_PORT => $conn->peerport,
+                    REMOTE_ADDR => $peerhost,
+                    REMOTE_PORT => $peerport,
                     'psgi.version' => [ 1, 1 ],
                     'psgi.errors'  => *STDERR,
                     'psgi.url_scheme' => 'http',
@@ -139,18 +149,20 @@ sub accept_loop {
                     'psgix.harakiri'    => Plack::Util::TRUE,
                 };
 
-                # no need to take care of pipelining since this module is a HTTP/1.0 server
                 my $may_keepalive = $req_count < $self->{max_keepalive_reqs};
                 if ($may_keepalive && $max_reqs_per_child && $proc_req_count >= $max_reqs_per_child) {
                     $may_keepalive = undef;
                 }
-                $is_keepalive = ($req_count != 1) ? 1 : 0;
-                my $use_keepalive = $self->handle_connection($env, $conn, $app, $may_keepalive, $req_count != 1);
+                $may_keepalive = 1 if length $pipelined_buf;
+                my $keepalive;
+                ($keepalive, $pipelined_buf) = $self->handle_connection($env, $conn, $app, 
+                                                                        $may_keepalive, $req_count != 1, $pipelined_buf);
+
                 if ($env->{'psgix.harakiri.commit'}) {
                     $conn->close;
                     return;
                 }
-                $use_keepalive or last;
+                last unless $keepalive;
                 # TODO add special cases for clients with broken keep-alive support, as well as disabling keep-alive for HTTP/1.0 proxies
             }
             $conn->close;
@@ -158,31 +170,50 @@ sub accept_loop {
     }
 }
 
+my $bad_response = [ 400, [ 'Content-Type' => 'text/plain', 'Connection' => 'close' ], [ 'Bad Request' ] ];
 sub handle_connection {
-    my($self, $env, $conn, $app, $use_keepalive, $is_keepalive) = @_;
+    my($self, $env, $conn, $app, $use_keepalive, $is_keepalive, $prebuf) = @_;
 
     my $buf = '';
-    my $res = [ 400, [ 'Content-Type' => 'text/plain' ], [ 'Bad Request' ] ];
+    my $pipelined_buf='';
+    my $res = $bad_response;
 
-    local $self->{can_exit} = 1;
+    local $self->{can_exit} = (defined $prebuf) ? 0 : 1;
     while (1) {
-        my $rlen = $self->read_timeout(
-            $conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf),
-            $is_keepalive ? $self->{keepalive_timeout} : $self->{timeout},
-        ) or return;
+        my $rlen;
+        if ( $rlen = length $prebuf ) {
+            $buf = $prebuf;
+            undef $prebuf;
+        }
+        else {
+            $rlen = $self->read_timeout(
+                $conn, \$buf, MAX_REQUEST_SIZE - length($buf), length($buf),
+                $is_keepalive ? $self->{keepalive_timeout} : $self->{timeout},
+            ) or return;
+        }
         $self->{can_exit} = 0;
         my $reqlen = parse_http_request($buf, $env);
         if ($reqlen >= 0) {
             # handle request
+            my $protocol = $env->{SERVER_PROTOCOL};
             if ($use_keepalive) {
-                if (my $c = $env->{HTTP_CONNECTION}) {
-                    $use_keepalive = undef
-                        unless $c =~ /^\s*keep-alive\s*/i;
-                } else {
-                    $use_keepalive = undef;
+                if ( $protocol eq 'HTTP/1.1' ) {
+                    if (my $c = $env->{HTTP_CONNECTION}) {
+                        $use_keepalive = undef 
+                            if $c =~ /^\s*close\s*/i;
+                    }
+                }
+                else {
+                    if (my $c = $env->{HTTP_CONNECTION}) {
+                        $use_keepalive = undef
+                            unless $c =~ /^\s*keep-alive\s*/i;
+                    } else {
+                        $use_keepalive = undef;
+                    }
                 }
             }
             $buf = substr $buf, $reqlen;
+            my $chunked = do { no warnings; lc delete $env->{HTTP_TRANSFER_ENCODING} eq 'chunked' };
             if (my $cl = $env->{CONTENT_LENGTH}) {
                 my $buffer = Plack::TempBuffer->new($cl);
                 while ($cl > 0) {
@@ -199,8 +230,55 @@ sub handle_connection {
                     $cl -= length $chunk;
                 }
                 $env->{'psgi.input'} = $buffer->rewind;
+            }
+            elsif ($chunked) {
+                my $buffer = Plack::TempBuffer->new;
+                my $chunk_buffer = '';
+                my $length;
+                DECHUNK: while(1) {
+                    my $chunk;
+                    if ( length $buf ) {
+                        $chunk = $buf;
+                        $buf = '';
+                    }
+                    else {
+                        $self->read_timeout($conn, \$chunk, CHUNKSIZE, 0, $self->{timeout})
+                            or return;
+                    }
+
+                    $chunk_buffer .= $chunk;
+                    while ( $chunk_buffer =~ s/^(([0-9a-fA-F]+).*\015\012)// ) {
+                        my $trailer   = $1;
+                        my $chunk_len = hex $2;
+                        if ($chunk_len == 0) {
+                            last DECHUNK;
+                        } elsif (length $chunk_buffer < $chunk_len + 2) {
+                            $chunk_buffer = $trailer . $chunk_buffer;
+                            last;
+                        }
+                        $buffer->print(substr $chunk_buffer, 0, $chunk_len, '');
+                        $chunk_buffer =~ s/^\015\012//;
+                        $length += $chunk_len;                        
+                    }
+                }
+                $env->{CONTENT_LENGTH} = $length;
+                $env->{'psgi.input'} = $buffer->rewind;
             } else {
+                if ( $buf =~ m!^(?:GET|HEAD)! ) { #pipeline
+                    $pipelined_buf = $buf;
+                    $use_keepalive = 1; #force keepalive
+                } # else clear buffer
                 $env->{'psgi.input'} = $null_io;
+            }
+
+            if ( $env->{HTTP_EXPECT} ) {
+                if ( $env->{HTTP_EXPECT} eq '100-continue' ) {
+                    $self->write_all($conn, "HTTP/1.1 100 Continue\015\012\015\012")
+                        or return;
+                } else {
+                    $res = [417,[ 'Content-Type' => 'text/plain', 'Connection' => 'close' ], [ 'Expectation Failed' ] ];
+                    last;
+                }
             }
 
             $res = Plack::Util::run_app $app, $env;
@@ -215,10 +293,10 @@ sub handle_connection {
     }
 
     if (ref $res eq 'ARRAY') {
-        $self->_handle_response($res, $conn, \$use_keepalive);
+        $self->_handle_response($env->{SERVER_PROTOCOL}, $res, $conn, \$use_keepalive);
     } elsif (ref $res eq 'CODE') {
         $res->(sub {
-            $self->_handle_response($_[0], $conn, \$use_keepalive);
+            $self->_handle_response($env->{SERVER_PROTOCOL}, $_[0], $conn, \$use_keepalive);
         });
     } else {
         die "Bad response $res";
@@ -227,11 +305,11 @@ sub handle_connection {
         threads->exit;
     }
 
-    return $use_keepalive;
+    return ($use_keepalive, $pipelined_buf);
 }
 
 sub _handle_response {
-    my($self, $res, $conn, $use_keepalive_r) = @_;
+    my($self, $protocol, $res, $conn, $use_keepalive_r) = @_;
     my $status_code = $res->[0];
     my $headers = $res->[1];
     my $body = $res->[2];
@@ -258,27 +336,49 @@ sub _handle_response {
     }
 
     # try to set content-length when keepalive can be used, or disable it
-    if ($$use_keepalive_r) {
+    my $use_chunked;
+    if ( $protocol eq 'HTTP/1.0' ) {
+        if ($$use_keepalive_r) {
+            if (defined $send_headers{'content-length'}
+                || defined $send_headers{'transfer-encoding'}) {
+                # ok
+            }
+            elsif ( ! Plack::Util::status_with_no_entity_body($status_code)
+                    && defined(my $cl = Plack::Util::content_length($body))) {
+                push @lines, "Content-Length: $cl\015\012";
+            }
+            else {
+                $$use_keepalive_r = undef
+            }            
+        }
+        push @lines, "Connection: keep-alive\015\012" if $$use_keepalive_r;
+        push @lines, "Connection: close\015\012" if !$$use_keepalive_r; #fmm..
+    }
+    elsif ( $protocol eq 'HTTP/1.1' ) {
         if (defined $send_headers{'content-length'}
                 || defined $send_headers{'transfer-encoding'}) {
             # ok
-        } elsif (! Plack::Util::status_with_no_entity_body($status_code)
-                    && defined(my $cl = Plack::Util::content_length($body))) {
-            push @lines, "Content-Length: $cl\015\012";
-        } else {
-            $$use_keepalive_r = undef
+        } elsif ( !Plack::Util::status_with_no_entity_body($status_code) ) {
+            push @lines, "Transfer-Encoding: chunked\015\012";
+            $use_chunked = 1;
         }
-        push @lines, "Connection: keep-alive\015\012"
-            if $$use_keepalive_r;
+        push @lines, "Connection: close\015\012" unless $$use_keepalive_r;
+
     }
-    unshift @lines, "HTTP/1.0 $status_code @{[ HTTP::Status::status_message($status_code) ]}\015\012";
+
+    unshift @lines, "HTTP/1.1 $status_code @{[ HTTP::Status::status_message($status_code) ]}\015\012";
     push @lines, "\015\012";
 
     if (defined $body && ref $body eq 'ARRAY' && @$body == 1
             && length $body->[0] < 8192) {
         # combine response header and small request body
+        my $buf = $body->[0];
+        if ($use_chunked ) {
+            my $len = length $buf;
+            $buf = sprintf("%x",$len) . "\015\012" . $buf . "\015\012" . '0' . "\015\012\015\012";
+        }
         $self->write_all(
-            $conn, join('', @lines, $body->[0]), $self->{timeout},
+            $conn, join('', @lines, $buf), $self->{timeout},
         );
         return;
     }
@@ -287,19 +387,43 @@ sub _handle_response {
 
     if (defined $body) {
         my $failed;
+        my $completed;
+        my $body_count = (ref $body eq 'ARRAY') ? $#{$body} + 1 : -1;
         Plack::Util::foreach(
             $body,
             sub {
                 unless ($failed) {
-                    $self->write_all($conn, $_[0], $self->{timeout})
+                    my $buf = $_[0];
+                    --$body_count;
+                    if ( $use_chunked ) {
+                        my $len = length $buf;
+                        return unless $len;
+                        $buf = sprintf("%x",$len) . "\015\012" . $buf . "\015\012";
+                        if ( $body_count == 0 ) {
+                            $buf .= '0' . "\015\012\015\012";
+                            $completed = 1;
+                        }
+                    }
+                    $self->write_all($conn, $buf, $self->{timeout})
                         or $failed = 1;
                 }
             },
         );
+        $self->write_all($conn, '0' . "\015\012\015\012", $self->{timeout}) if $use_chunked && !$completed;
     } else {
         return Plack::Util::inline_object
-            write => sub { $self->write_all($conn, $_[0], $self->{timeout}) },
-            close => sub { };
+            write => sub {
+                my $buf = $_[0];
+                if ( $use_chunked ) {
+                    my $len = length $buf;
+                    return unless $len;
+                    $buf = sprintf("%x",$len) . "\015\012" . $buf . "\015\012"
+                }
+                $self->write_all($conn, $buf, $self->{timeout})
+            },
+            close => sub {
+                $self->write_all($conn, '0' . "\015\012\015\012", $self->{timeout}) if $use_chunked;
+            };
     }
 }
 
