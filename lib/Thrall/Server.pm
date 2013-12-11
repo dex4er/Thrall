@@ -45,6 +45,10 @@ sub new {
         max_keepalive_reqs   => $args{max_keepalive_reqs} || 1,
         server_software      => $args{server_software} || "Thrall/$VERSION ($^O)",
         server_ready         => $args{server_ready} || sub {},
+        ssl                  => $args{ssl},
+        ipv6                 => $args{ipv6},
+        ssl_key_file         => $args{ssl_key_file},
+        ssl_cert_file        => $args{ssl_cert_file},
         min_reqs_per_child   => (
             defined $args{min_reqs_per_child}
                 ? $args{min_reqs_per_child} : undef,
@@ -83,15 +87,44 @@ sub run {
     $self->accept_loop($app);
 }
 
+sub prepare_socket_class {
+    my($self, $args) = @_;
+
+    if ($self->{ssl} && $self->{ipv6}) {
+        Carp::croak("SSL and IPv6 are not supported at the same time (yet). Choose one.");
+    }
+
+    if ($self->{ssl}) {
+        eval { require IO::Socket::SSL; 1 }
+            or Carp::croak("SSL suport requires IO::Socket::SSL");
+        $args->{SSL_key_file}  = $self->{ssl_key_file};
+        $args->{SSL_cert_file} = $self->{ssl_cert_file};
+        return "IO::Socket::SSL";
+    } elsif ($self->{ipv6}) {
+        eval { require IO::Socket::IP; 1 }
+            or Carp::croak("IPv6 support requires IO::Socket::IP");
+        $self->{host}      ||= '::';
+        $args->{LocalAddr} ||= '::';
+        return "IO::Socket::IP";
+    }
+
+    return "IO::Socket::INET";
+}
+
 sub setup_listener {
-    my $self = shift;
-    $self->{listen_sock} ||= IO::Socket::INET->new(
+    my ($self) = @_;
+
+    my %args = (
         Listen    => SOMAXCONN,
         LocalPort => $self->{port} || 5000,
         LocalAddr => $self->{host} || 0,
         Proto     => 'tcp',
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
+
+    my $class = $self->prepare_socket_class(\%args);
+    $self->{listen_sock} ||= $class->new(%args)
+        or die "failed to listen to port $self->{port}: $!";
 
     my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
     $self->{_listen_sock_is_tcp} = $family != AF_UNIX;
@@ -102,7 +135,7 @@ sub setup_listener {
             and $self->{_using_defer_accept} = 1;
     }
 
-    $self->{server_ready}->($self);
+    $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
 }
 
 sub accept_loop {
@@ -125,8 +158,11 @@ sub accept_loop {
             if ($self->{_listen_sock_is_tcp}) {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                     or die "setsockopt(TCP_NODELAY) failed:$!";
-                ($peerport, $peerhost) = unpack_sockaddr_in $peer;
-                $peeraddr = inet_ntoa($peerhost);
+                my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
+                ($peerport, $peerhost) = $family == AF_INET6
+                    ? unpack_sockaddr_in6 $peer
+                    : unpack_sockaddr_in $peer;
+                $peeraddr = Socket::inet_ntop($family, $peerhost);
             }
             my $req_count = 0;
             my $pipelined_buf = '';
@@ -141,7 +177,7 @@ sub accept_loop {
                     REMOTE_PORT => $peerport,
                     'psgi.version' => [ 1, 1 ],
                     'psgi.errors'  => *STDERR,
-                    'psgi.url_scheme' => 'http',
+                    'psgi.url_scheme'   => $self->{ssl} ? 'https' : 'http',
                     'psgi.run_once'     => Plack::Util::FALSE,
                     'psgi.multithread'  => $self->{is_multithread},
                     'psgi.multiprocess' => $self->{is_multiprocess},

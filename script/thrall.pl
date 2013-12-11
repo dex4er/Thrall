@@ -6,16 +6,17 @@ thrall - a simple PSGI/Plack HTTP server which uses threads
 
 =head1 SYNOPSIS
 
-$ thrall
---workers 20
---port 8080
---max-reqs-per-child 100
-app.psgi
+$ thrall --workers=20 --max-reqs-per-child=100 app.psgi
+
+$ thrall --port=80 --ipv6=1 app.psgi
+
+$ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
 
 =head1 DESCRIPTION
 
-Thrall is a standalone HTTP/1.0 server with keep-alive support. It uses
-threads instead pre-forking, so it works correctly on Windows.
+Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
+threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
+implementation which doesn't require any XS package.
 
 =head1 OPTIONS
 

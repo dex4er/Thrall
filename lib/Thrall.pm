@@ -8,9 +8,13 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 
   $ plackup -s Thrall --port=80 [options] your-app.psgi
 
+  $ plackup -s Thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt [options] your-app.psgi
+
+  $ plackup -s Thrall --port=80 --ipv6 [options] your-app.psgi
+
 =head1 DESCRIPTION
 
-Thrall is a standalone HTTP/1.0 server with keep-alive support. It uses
+Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
 threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
 implementation which doesn't require any XS package.
 
@@ -81,6 +85,22 @@ main thread so it doesn't consume all CPU. (default: 0.1)
 
 sets a new default per-thread stack size. (default: none)
 
+=item --ssl=#
+
+enables SSL support. The L<IO::Socket::SSL> module is required. (default: 0)
+
+=item --ssl-key-file=#
+
+specifies the path to SSL key file. (default: none)
+
+=item --ssl-cert-file=#
+
+specifies the path to SSL certificate file. (default: none)
+
+=item --ipv6=#
+
+enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
+
 =back
 
 =for readme continue
@@ -140,6 +160,10 @@ Kazuho Oku
 miyagawa
 
 kazeburo
+
+Some code based on Plack:
+
+Tatsuhiko Miyagawa
 
 =head1 LICENSE
 
