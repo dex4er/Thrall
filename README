@@ -47,12 +47,16 @@ BUGS
 
     The code repository is available at http://github.com/dex4er/Thrall
 
-AUTHOR
+AUTHORS
+    Piotr Roszatycki <dexter@cpan.org>
+
+    Based on Starlet by:
+
     Kazuho Oku
 
     miyagawa
 
-    Piotr Roszatycki <dexter@cpan.org>
+    kazeburo
 
 LICENSE
     Copyright (c) 2013 Piotr Roszatycki <dexter@cpan.org>.

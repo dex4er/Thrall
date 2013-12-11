@@ -103,13 +103,17 @@ If you find the bug or want to implement new features, please report it at
 The code repository is available at
 [http://github.com/dex4er/Thrall](http://github.com/dex4er/Thrall)
 
-# AUTHOR
+# AUTHORS
+
+Piotr Roszatycki <dexter@cpan.org>
+
+Based on Starlet by:
 
 Kazuho Oku
 
 miyagawa
 
-Piotr Roszatycki <dexter@cpan.org>
+kazeburo
 
 # LICENSE
 
