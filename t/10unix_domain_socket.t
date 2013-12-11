@@ -5,14 +5,19 @@ use File::Temp;
 use IO::Socket::UNIX;
 use Socket;
 
+if ($^O =~ /^(MSWin32|cygwin)$/) {
+    plan skip_all => 'Unix socket tests on Windows';
+    exit 0;
+}
+
 my ($fh, $filename) = File::Temp::tempfile(UNLINK=>0);
 close($fh);
 unlink($filename);
 
-#my $sock = IO::Socket::UNIX->new(
-#    Listen => Socket::SOMAXCONN(),
-#    Local  => $filename,
-#) or die "failed to listen to socket $filename:$!";
+my $sock = IO::Socket::UNIX->new(
+    Listen => Socket::SOMAXCONN(),
+    Local  => $filename,
+) or die "failed to listen to socket $filename:$!";
 
 my $pid = fork;
 if ( $pid == 0 ) {
@@ -20,7 +25,7 @@ if ( $pid == 0 ) {
     my $loader = Plack::Loader->load(
         'Thrall',
         max_workers => 5,
-        socket => $filename,
+        listen_sock => $sock,
     );
     $loader->run(sub{
         my $env = shift;

@@ -35,8 +35,11 @@ sub new {
     my($class, %args) = @_;
 
     my $self = bless {
-        host                 => $args{host} || 0,
-        port                 => $args{port} || 8080,
+        host                 => $args{host},
+        port                 => $args{port},
+        socket               => $args{socket},
+        listen               => $args{listen},
+        listen_sock          => $args{listen_sock},
         timeout              => $args{timeout} || 300,
         keepalive_timeout    => $args{keepalive_timeout} || 2,
         max_keepalive_reqs   => $args{max_keepalive_reqs} || 1,
@@ -84,8 +87,8 @@ sub setup_listener {
     my $self = shift;
     $self->{listen_sock} ||= IO::Socket::INET->new(
         Listen    => SOMAXCONN,
-        LocalPort => $self->{port},
-        LocalAddr => $self->{host},
+        LocalPort => $self->{port} || 5000,
+        LocalAddr => $self->{host} || 0,
         Proto     => 'tcp',
         ReuseAddr => 1,
     ) or die "failed to listen to port $self->{port}:$!";
@@ -132,9 +135,9 @@ sub accept_loop {
                 ++$proc_req_count;
                 my $env = {
                     SERVER_PORT => $self->{port} || 0,
-                    SERVER_NAME => $self->{host} || 'localhost',
+                    SERVER_NAME => $self->{host} || '*',
                     SCRIPT_NAME => '',
-                    REMOTE_ADDR => $peerhost,
+                    REMOTE_ADDR => $peeraddr,
                     REMOTE_PORT => $peerport,
                     'psgi.version' => [ 1, 1 ],
                     'psgi.errors'  => *STDERR,
@@ -155,7 +158,7 @@ sub accept_loop {
                 }
                 $may_keepalive = 1 if length $pipelined_buf;
                 my $keepalive;
-                ($keepalive, $pipelined_buf) = $self->handle_connection($env, $conn, $app, 
+                ($keepalive, $pipelined_buf) = $self->handle_connection($env, $conn, $app,
                                                                         $may_keepalive, $req_count != 1, $pipelined_buf);
 
                 if ($env->{'psgix.harakiri.commit'}) {
@@ -199,7 +202,7 @@ sub handle_connection {
             if ($use_keepalive) {
                 if ( $protocol eq 'HTTP/1.1' ) {
                     if (my $c = $env->{HTTP_CONNECTION}) {
-                        $use_keepalive = undef 
+                        $use_keepalive = undef
                             if $c =~ /^\s*close\s*/i;
                     }
                 }
@@ -258,7 +261,7 @@ sub handle_connection {
                         }
                         $buffer->print(substr $chunk_buffer, 0, $chunk_len, '');
                         $chunk_buffer =~ s/^\015\012//;
-                        $length += $chunk_len;                        
+                        $length += $chunk_len;
                     }
                 }
                 $env->{CONTENT_LENGTH} = $length;
@@ -349,7 +352,7 @@ sub _handle_response {
             }
             else {
                 $$use_keepalive_r = undef
-            }            
+            }
         }
         push @lines, "Connection: keep-alive\015\012" if $$use_keepalive_r;
         push @lines, "Connection: close\015\012" if !$$use_keepalive_r; #fmm..
