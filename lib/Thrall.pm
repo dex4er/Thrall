@@ -116,10 +116,12 @@ XP/Vista/7. Some requests can fail with message:
 Perl on Windows 8 might works correctly. Also Cygwin version seems to be
 correct.
 
-This problem was fixed in Perl 5.19.5.
+This problem was fixed in Perl 5.18.2 and 5.19.5.
 
 See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> for more
 information about this issue.
+
+=head2 Reporting
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/Thrall/issues>
