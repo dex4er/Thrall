@@ -97,17 +97,6 @@ L<Starman>
 
 =head1 LIMITATIONS
 
-There is a problem with Perl implementation on Windows XP/Vista/7. Some
-requests can fail with message:
-
-  failed to set socket to nonblocking mode:An operation was attempted on
-  something that is not a socket.
-
-Perl on Windows 8 works correctly. Also Cygwin version seems to be correct.
-
-See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> for more
-information about this issue.
-
 See L<threads/"BUGS AND LIMITATIONS"> and L<perlthrtut/"Thread-Safety of
 System Libraries"> to read about limitations for PSGI applications started
 with Thrall and check if you encountered a known problem.
@@ -117,6 +106,20 @@ directory, catching signals, starting new processes. Environment variables
 might (Linux, Unix) or might not (Windows) be shared between threads.
 
 =head1 BUGS
+
+There is a problem with Perl threads implementation which occurs on Windows
+XP/Vista/7. Some requests can fail with message:
+
+  failed to set socket to nonblocking mode:An operation was attempted on
+  something that is not a socket.
+
+Perl on Windows 8 might works correctly. Also Cygwin version seems to be
+correct.
+
+This problem was fixed in Perl 5.19.5.
+
+See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> for more
+information about this issue.
 
 If you find the bug or want to implement new features, please report it at
 L<https://github.com/dex4er/Thrall/issues>
