@@ -16,6 +16,8 @@ my $thrall = Plack::Loader->load(
     max_reqs_per_child => 10,
 );
 
+sleep 1;
+
 my ($min, $max) = (7, 7);
 for (my $i = 0; $i < 10000; $i++) {
     my $n = $thrall->_calc_reqs_per_child();

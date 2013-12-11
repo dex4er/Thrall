@@ -21,6 +21,7 @@ test_psgi
     client => sub {
         my %seen_pid;
         my $cb = shift;
+        sleep 1;
         for (1..23) {
             my $res = $cb->(GET "/");
             $seen_pid{$res->content}++;
@@ -37,6 +38,7 @@ test_psgi
     client => sub {
         my %seen_pid;
         my $cb = shift;
+        sleep 1;
         for (1..23) {
             my $res = $cb->(GET "/");
             $seen_pid{$res->content}++;

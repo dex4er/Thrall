@@ -32,6 +32,8 @@ my $app = sub {
 test_psgi $app, sub {
     my $cb = shift;
 
+    sleep 1;
+
     open my $fh, "<:raw", $file;
     local $/ = \1024;
 

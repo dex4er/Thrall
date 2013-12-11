@@ -28,6 +28,8 @@ my $app = sub {
 test_psgi $app, sub {
     my $cb = shift;
 
+    sleep 1;
+
     my $req = HTTP::Request->new(GET => "http://localhost/");
     my $res = $cb->($req);
 
