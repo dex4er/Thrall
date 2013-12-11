@@ -1,4 +1,4 @@
-0.0103  2013-12-10      Piotr Roszatycki <dexter@cpan.org>
+0.0103  2013-12-11      Piotr Roszatycki <dexter@cpan.org>
 
 * Non joined threads are detached. It might increase stability on
   Windows.
