@@ -10,14 +10,8 @@ if ($^O =~ /^(MSWin32|cygwin)$/) {
     exit 0;
 }
 
-my ($fh, $filename) = File::Temp::tempfile(UNLINK=>0);
-close($fh);
+my ($fh, $filename) = File::Temp::tempfile(UNLINK=>1);
 unlink($filename);
-
-my $sock = IO::Socket::UNIX->new(
-    Listen => Socket::SOMAXCONN(),
-    Local  => $filename,
-) or die "failed to listen to socket $filename:$!";
 
 my $pid = fork;
 if ( $pid == 0 ) {
@@ -25,12 +19,11 @@ if ( $pid == 0 ) {
     my $loader = Plack::Loader->load(
         'Thrall',
         max_workers => 5,
-        listen_sock => $sock,
+        socket => $filename,
     );
     $loader->run(sub{
         my $env = shift;
-        my $remote = $env->{REMOTE_ADDR};
-        $remote = 'UNIX' if ! defined $remote;
+        my $remote = $env->{REMOTE_ADDR} || 'UNIX';
         [200, ['Content-Type'=>'text/html'], ["HELLO $remote"]];
     });
     exit;

@@ -10,6 +10,8 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 
     $ plackup -s Thrall --port=80 --ipv6 [options] your-app.psgi
 
+    $ plackup -s Thrall --socket=/tmp/thrall.sock [options] your-app.psgi
+
 # DESCRIPTION
 
 Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
@@ -79,6 +81,12 @@ options(s).
 - \--ipv6=\#
 
     enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO::Socket::IP) module is required. (default: 0)
+
+- \--socket=\#
+
+    enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO::Socket::UNIX) module is required.
+    The socket file have to be not yet created. The first character `@` in socket
+    file name means that abstract socket address will be created. (default: none)
 
 # NOTES
 

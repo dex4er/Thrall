@@ -8,6 +8,8 @@ SYNOPSIS
 
       $ plackup -s Thrall --port=80 --ipv6 [options] your-app.psgi
 
+      $ plackup -s Thrall --socket=/tmp/thrall.sock [options] your-app.psgi
+
 DESCRIPTION
     Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
     threads instead pre-forking, so it works correctly on Windows. It is

@@ -90,11 +90,20 @@ sub run {
 sub prepare_socket_class {
     my($self, $args) = @_;
 
-    if ($self->{ssl} && $self->{ipv6}) {
+    if ($self->{socket} and ($self->{ssl} or $self->{ipv6})) {
+        Carp::croak("UNIX socket and either SSL or IPv6 are not supported at the same time. Choose one.");
+    }
+
+    if ($self->{ssl} and $self->{ipv6}) {
         Carp::croak("SSL and IPv6 are not supported at the same time (yet). Choose one.");
     }
 
-    if ($self->{ssl}) {
+    if ($self->{socket}) {
+        try { require IO::Socket::UNIX; 1 }
+            or Carp::croak("UNIX socket suport requires IO::Socket::UNIX");
+        $args->{Local} =~ s/^@/\0/; # abstract socket address
+        return "IO::Socket::UNIX";
+    } elsif ($self->{ssl}) {
         try { require IO::Socket::SSL; 1 }
             or Carp::croak("SSL suport requires IO::Socket::SSL");
         $args->{SSL_key_file}  = $self->{ssl_key_file};
@@ -114,17 +123,21 @@ sub prepare_socket_class {
 sub setup_listener {
     my ($self) = @_;
 
-    my %args = (
-        Listen    => SOMAXCONN,
+    my %args = $self->{socket} ? (
+        Listen    => Socket::SOMAXCONN,
+        Local     => $self->{socket},
+    ) : (
+        Listen    => Socket::SOMAXCONN,
         LocalPort => $self->{port} || 5000,
         LocalAddr => $self->{host} || 0,
         Proto     => 'tcp',
         ReuseAddr => 1,
-    ) or die "failed to listen to port $self->{port}:$!";
+    );
 
     my $class = $self->prepare_socket_class(\%args);
     $self->{listen_sock} ||= $class->new(%args)
-        or die "failed to listen to port $self->{port}: $!";
+        or die sprintf "failed to listen to %s: $!", $self->{socket}
+            ? "socket $self->{socket}" : "port $self->{port}";
 
     my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
     $self->{_listen_sock_is_tcp} = $family != AF_UNIX;
@@ -167,6 +180,8 @@ sub accept_loop {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in($peer);
                     $peeraddr = Socket::inet_ntoa($peerhost);
                 }
+            } else {
+                $peeraddr = Socket::unpack_sockaddr_un($peer);
             }
             my $req_count = 0;
             my $pipelined_buf = '';
