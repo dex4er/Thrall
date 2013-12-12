@@ -19,7 +19,7 @@ my $build = Module::Build::My->new(
     license                 => 'perl',
     requires                => {
         'perl'                  => 5.008_001,
-        $Config{useithreads} ? 'threads' => 1.73 : 'forks' => 0,
+        $Config{useithreads} ? ('threads' => 1.73) : ('forks' => 0),
         'Plack'                 => 0.9920,
     },
     build_requires          => {
