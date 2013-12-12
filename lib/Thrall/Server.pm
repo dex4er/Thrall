@@ -95,13 +95,13 @@ sub prepare_socket_class {
     }
 
     if ($self->{ssl}) {
-        eval { require IO::Socket::SSL; 1 }
+        try { require IO::Socket::SSL; 1 }
             or Carp::croak("SSL suport requires IO::Socket::SSL");
         $args->{SSL_key_file}  = $self->{ssl_key_file};
         $args->{SSL_cert_file} = $self->{ssl_cert_file};
         return "IO::Socket::SSL";
     } elsif ($self->{ipv6}) {
-        eval { require IO::Socket::IP; 1 }
+        try { require IO::Socket::IP; 1 }
             or Carp::croak("IPv6 support requires IO::Socket::IP");
         $self->{host}      ||= '::';
         $args->{LocalAddr} ||= '::';
@@ -159,10 +159,14 @@ sub accept_loop {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                     or die "setsockopt(TCP_NODELAY) failed:$!";
                 my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
-                ($peerport, $peerhost) = $family == AF_INET6
-                    ? unpack_sockaddr_in6 $peer
-                    : unpack_sockaddr_in $peer;
-                $peeraddr = Socket::inet_ntop($family, $peerhost);
+                local $@;
+                if (try { $family == AF_INET6 }) {
+                    ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);
+                    $peeraddr = Socket::inet_ntop($family, $peerhost);
+                } else {
+                    ($peerport, $peerhost) = Socket::unpack_sockaddr_in($peer);
+                    $peeraddr = Socket::inet_ntoa($peerhost);
+                }
             }
             my $req_count = 0;
             my $pipelined_buf = '';
