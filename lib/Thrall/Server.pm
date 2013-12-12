@@ -180,8 +180,6 @@ sub accept_loop {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in($peer);
                     $peeraddr = Socket::inet_ntoa($peerhost);
                 }
-            } else {
-                $peeraddr = Socket::unpack_sockaddr_un($peer);
             }
             my $req_count = 0;
             my $pipelined_buf = '';
