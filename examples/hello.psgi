@@ -2,12 +2,8 @@
 
 # Simple PSGI application
 
-use Data::Dumper;
-
-$Data::Dumper::Sortkeys = 1;
-
 sub {
-    my $dump = Dumper @_;
+    my $text = "Hello, world!\n";
 
-    return [ 200, [ "Content-Type" => "text/plain", "Content-Length" => length($dump) ], [ $dump ] ];
+    return [ 200, [ "Content-Type" => "text/plain", "Content-Length" => length($text) ], [ $text ] ];
 };
