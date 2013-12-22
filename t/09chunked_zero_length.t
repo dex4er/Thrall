@@ -36,6 +36,8 @@ test_psgi $app, sub {
     my $res = $cb->($req);
 
     is $res->content, "ContentAgain";
+
+    sleep 1;
 };
 
 done_testing;

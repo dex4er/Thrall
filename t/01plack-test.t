@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+
 use strict;
 use Test::More;
 use Plack::Test::Suite;
@@ -9,5 +10,6 @@ if ($^O =~ /^(MSWin32|cygwin)$/) {
 }
 
 Plack::Test::Suite->run_server_tests('Thrall');
+sleep 1;
 done_testing();
 

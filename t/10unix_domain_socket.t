@@ -43,6 +43,8 @@ $client->sysread(my $buf, 1024);
 like $buf, qr/Thrall/;
 like $buf, qr/HELLO UNIX/;
 
+sleep 1;
+
 done_testing();
 
 kill 'TERM',$pid;

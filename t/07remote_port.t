@@ -26,6 +26,7 @@ test_tcp(
         $sock->syswrite($req,length($req));
         $sock->sysread( my $buf, 1024);
         like( $buf, qr/HELLO $localport/);
+        sleep 1;
     },
     server => sub {
         my $port = shift;

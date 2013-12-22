@@ -33,7 +33,6 @@ my $app = sub {
 
 test_psgi $app, sub {
     my $cb = shift;
-
     sleep 1;
 
     open my $fh, "<:raw", $file;
@@ -46,6 +45,8 @@ test_psgi $app, sub {
 
     is $res->header('X-Content-Length'), 79838;
     is Digest::MD5::md5_hex($res->content), '983726ae0e4ce5081bef5fb2b7216950';
+
+    sleep 1;
 };
 
 done_testing;

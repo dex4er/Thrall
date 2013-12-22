@@ -26,6 +26,7 @@ test_tcp(
         ok( $res->{success} );
         unlike( scalar $res->{headers}{server}, qr/Thrall/ );
         like( scalar $res->{headers}{server}, qr/Hello/ );
+        sleep 1;
     },
     server => sub {
         my $port = shift;

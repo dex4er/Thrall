@@ -28,7 +28,8 @@ test_psgi
             my $res = $cb->(GET "/");
             $seen_pid{$res->content}++;
         }
-        cmp_ok(keys(%seen_pid), '<=', 10, 'In non-harakiri mode, pid is reused')
+        cmp_ok(keys(%seen_pid), '<=', 10, 'In non-harakiri mode, pid is reused');
+        sleep 1;
     };
 
 test_psgi
@@ -46,6 +47,7 @@ test_psgi
             $seen_pid{$res->content}++;
         }
         is keys(%seen_pid), 23, 'In Harakiri mode, each pid only used once';
+        sleep 1;
     };
 
 done_testing;
