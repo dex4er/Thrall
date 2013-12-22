@@ -9,7 +9,18 @@ if ($^O =~ /^(MSWin32|cygwin)$/) {
     exit 0;
 }
 
+push @Plack::Test::Suite::TEST,
+    [
+        'sleep',
+        sub {
+            sleep 1;
+            pass;
+        },
+        sub {
+            # nothing
+        },
+    ];
+
 Plack::Test::Suite->run_server_tests('Thrall');
-sleep 1;
 done_testing();
 
