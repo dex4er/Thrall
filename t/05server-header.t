@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 use strict;
 use warnings;
 use Test::More;
@@ -24,7 +26,6 @@ test_tcp(
         ok( $res->{success} );
         unlike( scalar $res->{headers}{server}, qr/Thrall/ );
         like( scalar $res->{headers}{server}, qr/Hello/ );
-
     },
     server => sub {
         my $port = shift;

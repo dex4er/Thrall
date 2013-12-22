@@ -1,3 +1,4 @@
+#!/usr/bin/perl
 use strict;
 use Test::More;
 use Plack::Test::Suite;
