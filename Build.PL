@@ -49,4 +49,8 @@ my $build = Module::Build::My->new(
     },
 );
 
+if ($^O eq 'MSWin32' and $] >= 5.016 and ($] < 5.018002 or $] >= 5.019 and $] < 5.019005)) {
+    $build->log_info("Warning: this version of Perl has broken GLOB in threads and Thrall might works incorrectly \n");
+}
+
 $build->create_build_script;
