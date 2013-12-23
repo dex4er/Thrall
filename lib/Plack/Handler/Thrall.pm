@@ -100,7 +100,7 @@ sub run {
         };
         while (1) {
             $self->accept_loop($app, $self->_calc_reqs_per_child());
-            sleep $self->{spawn_interval} if $self->{spawn_interval};
+            $self->_sleep($self->{spawn_interval});
         }
     }
 }
