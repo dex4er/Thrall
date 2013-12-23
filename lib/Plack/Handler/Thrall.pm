@@ -112,7 +112,7 @@ sub _sleep {
 
 sub _create_thread {
     my ($self, $app) = @_;
-    my $thr = threads->create(
+    my $thr = threads->create( {context => 'void'},
         sub {
             my ($self, $app) = @_;
             warn "*** thread ", threads->tid, " starting" if DEBUG;
