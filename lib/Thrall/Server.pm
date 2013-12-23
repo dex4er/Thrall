@@ -29,6 +29,8 @@ use constant DEBUG            => $ENV{PERL_THRALL_DEBUG};
 use constant CHUNKSIZE        => 64 * 1024;
 use constant MAX_REQUEST_SIZE => 131072;
 
+use constant HAS_INET6        => eval { AF_INET6 && socket my $ipv6_socket, AF_INET6, SOCK_DGRAM, 0 };
+
 my $null_io = do { open my $io, "<", \""; $io }; #"
 
 sub new {
@@ -171,11 +173,10 @@ sub accept_loop {
             if ($self->{_listen_sock_is_tcp}) {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
                     or die "setsockopt(TCP_NODELAY) failed:$!";
-                my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
                 local $@;
-                if (try { $family == AF_INET6 }) {
+                if (HAS_INET6 && Socket::sockaddr_family(getsockname($conn)) == AF_INET6) {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);
-                    $peeraddr = Socket::inet_ntop($family, $peerhost);
+                    $peeraddr = Socket::inet_ntop(AF_INET6, $peerhost);
                 } else {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in($peer);
                     $peeraddr = Socket::inet_ntoa($peerhost);
