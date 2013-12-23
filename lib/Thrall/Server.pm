@@ -71,6 +71,7 @@ sub new {
         is_multithread       => Plack::Util::FALSE,
         is_multiprocess      => Plack::Util::FALSE,
         _using_defer_accept  => undef,
+        _unlink              => [],
     }, $class;
 
     if ($args{max_workers} && $args{max_workers} > 1) {
@@ -142,12 +143,17 @@ sub setup_listener {
             ? "socket $self->{socket}" : "port $self->{port}";
 
     my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
-    $self->{_listen_sock_is_tcp} = $family != AF_UNIX;
+    $self->{_listen_sock_is_unix} = $family == AF_UNIX;
+    $self->{_listen_sock_is_tcp}  = $family != AF_UNIX;
 
     # set defer accept
     if ($^O eq 'linux' && $self->{_listen_sock_is_tcp}) {
         setsockopt($self->{listen_sock}, IPPROTO_TCP, 9, 1)
             and $self->{_using_defer_accept} = 1;
+    }
+
+    if ($self->{_listen_sock_is_unix} && not $args{Local} =~ /^\0/) {
+        push @{$self->{_unlink}}, $args{Local};
     }
 
     $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
@@ -546,6 +552,13 @@ sub write_all {
         $off += $ret;
     }
     return length $buf;
+}
+
+sub DESTROY {
+    my ($self) = @_;
+    while (my $f = shift @{$self->{_unlink}}) {
+        unlink $f;
+    }
 }
 
 1;
