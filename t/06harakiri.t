@@ -7,11 +7,6 @@ use HTTP::Request::Common;
 use Plack::Test;
 use Test::More;
 
-if ($^O =~ /^(MSWin32|cygwin)$/) {
-    plan skip_all => 'TCP tests on Windows';
-    exit 0;
-}
-
 $Plack::Test::Impl = 'Server';
 $ENV{PLACK_SERVER} = 'Thrall';
 

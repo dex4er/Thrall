@@ -8,12 +8,6 @@ use HTTP::Request;
 use Test::More;
 use Digest::MD5;
 
-
-if ($^O =~ /^(MSWin32|cygwin)$/) {
-    plan skip_all => 'TCP tests on Windows';
-    exit 0;
-}
-
 $Plack::Test::Impl = "Server";
 $ENV{PLACK_SERVER} = 'Thrall';
 

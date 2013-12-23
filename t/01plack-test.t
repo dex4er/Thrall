@@ -4,11 +4,6 @@ use strict;
 use Test::More;
 use Plack::Test::Suite;
 
-if ($^O =~ /^(MSWin32|cygwin)$/) {
-    plan skip_all => 'TCP tests on Windows';
-    exit 0;
-}
-
 push @Plack::Test::Suite::TEST,
     [
         'sleep',
