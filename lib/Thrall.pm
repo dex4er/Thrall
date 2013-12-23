@@ -105,9 +105,10 @@ enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
 
 =item --socket=#
 
-enables UNIX socket support. The L<IO::Socket::UNIX> module is required.
-The socket file have to be not yet created. The first character C<@> in socket
-file name means that abstract socket address will be created. (default: none)
+enables UNIX socket support. The L<IO::Socket::UNIX> module is required. The
+socket file have to be not yet created. The first character C<@> or C<\0> in
+the socket file name means that abstract socket address will be created.
+(default: none)
 
 =back
 
@@ -135,16 +136,16 @@ might (Linux, Unix) or might not (Windows) be shared between threads.
 
 =head1 BUGS
 
-There is a problem with Perl threads implementation which occurs on Windows
-XP/Vista/7. Some requests can fail with message:
+There is a problem with Perl threads implementation which occurs on Windows.
+Some requests can fail with message:
 
   failed to set socket to nonblocking mode:An operation was attempted on
   something that is not a socket.
 
-Perl on Windows 8 might works correctly. Also Cygwin version seems to be
-correct.
+Cygwin version seems to be correct.
 
-This problem was fixed in Perl 5.18.2 and 5.19.5.
+This problem was introduced in Perl 5.16 and fixed in Perl 5.18.2 and Perl
+5.19.5.
 
 See L<https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003> for more
 information about this issue.
