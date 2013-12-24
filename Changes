@@ -1,9 +1,9 @@
-0.0200  2013-12-12      Piotr Roszatycki <dexter@cpan.org>
+0.0200  2013-12-24      Piotr Roszatycki <dexter@cpan.org>
 
 * Based on Starlet 0.21
-* Support HTTP/1.1
-* Support IPv6 and SSL
-* Support UNIX socket
+* Supports HTTP/1.1
+* Supports IPv6 and SSL
+* Supports UNIX socket
 * Thrall::Server class accepts listen_sock as an argument
 
 0.0103  2013-12-11      Piotr Roszatycki <dexter@cpan.org>
