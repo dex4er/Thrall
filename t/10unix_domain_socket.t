@@ -7,8 +7,8 @@ use File::Temp;
 use IO::Socket::UNIX;
 use Socket;
 
-if ($^O =~ /^(MSWin32|cygwin)$/) {
-    plan skip_all => 'Unix socket tests on Windows';
+if ($^O eq 'MSWin32') {
+    plan skip_all => 'UNIX socket tests on Windows';
     exit 0;
 }
 
