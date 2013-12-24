@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)
+
 # NAME
 
 Thrall - a simple PSGI/Plack HTTP server which uses threads
