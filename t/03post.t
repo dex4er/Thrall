@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+BEGIN { delete $ENV{http_proxy} };
+
 use HTTP::Tiny;
 use Plack::Runner;
 use Test::More;

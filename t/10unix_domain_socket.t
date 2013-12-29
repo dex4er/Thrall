@@ -1,6 +1,10 @@
 #!/usr/bin/perl
 
 use strict;
+use warnings;
+
+BEGIN { delete $ENV{http_proxy} };
+
 use Test::More;
 use Plack::Loader;
 use File::Temp;

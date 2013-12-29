@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+BEGIN { delete $ENV{http_proxy} };
+
 use Carp ();
 
 $SIG{__WARN__} = sub { local $Carp::CarpLevel = 1; Carp::confess("Warning: ", @_) };

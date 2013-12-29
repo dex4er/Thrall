@@ -3,6 +3,8 @@
 use strict;
 use warnings;
 
+BEGIN { delete $ENV{http_proxy} };
+
 use Plack::Loader;
 use Test::More;
 use Test::TCP qw(empty_port);

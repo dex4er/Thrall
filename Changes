@@ -1,5 +1,7 @@
 0.0201  2013-12-29      Piotr Roszatycki <dexter@cpan.org>
 
+* Unset http_proxy environment variable on tests.
+
 0.0200  2013-12-24      Piotr Roszatycki <dexter@cpan.org>
 
 * Based on Starlet 0.21

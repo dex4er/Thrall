@@ -2,6 +2,9 @@
 
 use strict;
 use warnings;
+
+BEGIN { delete $ENV{http_proxy} };
+
 use Test::More;
 use Test::TCP;
 use IO::Socket::INET;
