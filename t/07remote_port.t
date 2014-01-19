@@ -10,7 +10,7 @@ use Test::TCP;
 use IO::Socket::INET;
 use Plack::Loader;
 
-if ($^O eq 'MSWin32' and $] >= 5.016 and ($] < 5.018002 or $] >= 5.019 and $] < 5.019005)) {
+if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
     plan skip_all => 'Perl with bug RT#119003 on Windows';
     exit 0;
 }

@@ -110,6 +110,10 @@ Especially, PSGI applications should avoid: changing current working
 directory, catching signals, starting new processes. Environment variables
 might (Linux, Unix) or might not (Windows) be shared between threads.
 
+Thrall is very slow on first request for each thread. It is because spawning
+new thread is slow in Perl itself. Thrall is very fast on another requests and
+generally is faster than any implementation which uses fork.
+
 # BUGS
 
 There is a problem with Perl threads implementation which occurs on Windows.
@@ -118,13 +122,17 @@ Some requests can fail with message:
     failed to set socket to nonblocking mode:An operation was attempted on
     something that is not a socket.
 
+or
+
+    Bad file descriptor at (eval 24) line 4.
+
 Cygwin version seems to be correct.
 
-This problem was introduced in Perl 5.16 and fixed in Perl 5.18.2 and Perl
-5.19.5.
+This problem was introduced in Perl 5.16 and fixed in Perl 5.19.5.
 
-See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003) for more
-information about this issue.
+See [https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003](https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003) and
+[https://github.com/dex4er/Thrall/issues/5](https://github.com/dex4er/Thrall/issues/5) for more information about this
+issue.
 
 ## Reporting
 
