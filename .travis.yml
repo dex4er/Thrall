@@ -9,8 +9,8 @@ install:
   - cpanm --with-recommends --installdeps --notest --skip-satisfied .
 script: ./Dist.SH
 perl:
-  - 5.8
   - 5.18
+  - 5.8
 branch:
   only:
     - master
