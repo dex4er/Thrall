@@ -1,6 +1,6 @@
-0.0202  2014-01-19      Piotr Roszatycki <dexter@cpan.org>
+0.0202  2014-01-21      Piotr Roszatycki <dexter@cpan.org>
 
-?
+* Handle SIGINT (ctrl-c) gracefully.
 
 0.0201  2013-12-29      Piotr Roszatycki <dexter@cpan.org>
 

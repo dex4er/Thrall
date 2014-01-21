@@ -167,6 +167,7 @@ sub accept_loop {
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
 
+    # Threads don't like simple 'IGNORE'
     local $SIG{PIPE} = sub { 'IGNORE' };
 
     while (! defined $max_reqs_per_child || $proc_req_count < $max_reqs_per_child) {

@@ -51,15 +51,26 @@ sub run {
     $ENV{PERL_ANYEVENT_MODEL} = 'Perl';
     $ENV{PERL_ANYEVENT_IO_MODEL} = 'Perl';
 
+    # Windows 7 and previous have bad SIGINT handling
+    my $sigint = 'INT';
+    if ($^O eq 'MSWin32') {
+        require Win32;
+        my @v = Win32::GetOSVersion();
+        if ($v[1]*1000 + $v[2] < 6_002) {
+            $sigint = 'NONE';
+        }
+    };
+
     $self->setup_listener();
 
+    # Threads don't like simple 'IGNORE'
     local $SIG{PIPE} = sub { 'IGNORE' };
 
     if ($self->{max_workers} != 0) {
         if ($self->{thread_stack_size}) {
             threads->set_stack_size($self->{thread_stack_size});
         }
-        local $SIG{TERM} = sub {
+        local $SIG{$sigint} = local $SIG{TERM} = sub {
             my ($sig) = @_;
             warn "*** SIG$sig received in thread ", threads->tid if DEBUG;
             $self->{term_received}++;
@@ -93,7 +104,7 @@ sub run {
         }
     } else {
         # run directly, mainly for debugging
-        local $SIG{TERM} = sub {
+        local $SIG{$sigint} = local $SIG{TERM} = sub {
             my ($sig) = @_;
             warn "*** SIG$sig received in thread ", threads->tid if DEBUG;
             exit 0;
