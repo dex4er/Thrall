@@ -9,8 +9,13 @@ use Plack::Loader;
 use Test::More;
 use Test::TCP qw(empty_port);
 
-if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
-    plan skip_all => 'Perl with bug RT#119003 on Windows';
+if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BROKEN}) {
+    plan skip_all => 'Perl with bug RT#119003 on MSWin32';
+    exit 0;
+}
+
+if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
+    plan skip_all => 'Win32::Process required';
     exit 0;
 }
 
@@ -18,6 +23,7 @@ my $thrall = Plack::Loader->load(
     'Thrall',
     min_reqs_per_child => 5,
     max_reqs_per_child => 10,
+    quiet => 1,
 );
 
 sleep 1;

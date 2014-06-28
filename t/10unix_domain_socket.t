@@ -12,7 +12,12 @@ use IO::Socket::UNIX;
 use Socket;
 
 if ($^O eq 'MSWin32') {
-    plan skip_all => 'UNIX socket tests on Windows';
+    plan skip_all => 'UNIX socket tests on MSWin32';
+    exit 0;
+}
+
+if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
+    plan skip_all => 'Win32::Process required';
     exit 0;
 }
 
@@ -24,6 +29,7 @@ if ( $pid == 0 ) {
     # server
     my $loader = Plack::Loader->load(
         'Thrall',
+        quiet => 1,
         max_workers => 5,
         socket => $filename,
     );
@@ -54,4 +60,3 @@ done_testing();
 kill 'TERM',$pid;
 waitpid($pid,0);
 unlink($filename);
-

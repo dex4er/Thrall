@@ -10,13 +10,19 @@ use Plack::Test;
 use HTTP::Request;
 use Test::More;
 
-if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
-    plan skip_all => 'Perl with bug RT#119003 on Windows';
+if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BROKEN}) {
+    plan skip_all => 'Perl with bug RT#119003 on MSWin32';
+    exit 0;
+}
+
+if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
+    plan skip_all => 'Win32::Process required';
     exit 0;
 }
 
 $Plack::Test::Impl = "Server";
 $ENV{PLACK_SERVER} = 'Thrall';
+$ENV{PLACK_QUIET} = 1;
 
 my $app = sub {
     my $env = shift;

@@ -10,8 +10,13 @@ use Test::TCP;
 use HTTP::Tiny;
 use Plack::Loader;
 
-if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
-    plan skip_all => 'Perl with bug RT#119003 on Windows';
+if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BROKEN}) {
+    plan skip_all => 'Perl with bug RT#119003 on MSWin32';
+    exit 0;
+}
+
+if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
+    plan skip_all => 'Win32::Process required';
     exit 0;
 }
 
@@ -35,6 +40,7 @@ test_tcp(
         my $port = shift;
         my $loader = Plack::Loader->load(
             'Thrall',
+            quiet => 1,
             port => $port,
             max_workers => 5,
         );
@@ -49,4 +55,3 @@ test_tcp(
 );
 
 done_testing;
-
