@@ -6,11 +6,13 @@ use warnings;
 our $VERSION = '0.0300';
 
 use Config;
-use if ! $Config{useithreads}, 'forks';
 
+use if ! $Config{useithreads}, 'forks';
 use threads;
 
-use Carp ();
+use English '-no_match_vars';
+use Errno ();
+use File::Spec;
 use Plack;
 use Plack::HTTPParser qw( parse_http_request );
 use IO::Socket::INET;
@@ -19,17 +21,22 @@ use HTTP::Status;
 use List::Util qw(max sum);
 use Plack::Util;
 use Plack::TempBuffer;
-use POSIX qw(EINTR EAGAIN EWOULDBLOCK);
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
 use Try::Tiny;
-use Time::HiRes qw(time);
+
+BEGIN { try { require Time::HiRes; Time::HiRes->import(qw(time)) } }
 
 use constant DEBUG            => $ENV{PERL_THRALL_DEBUG};
 use constant CHUNKSIZE        => 64 * 1024;
 use constant MAX_REQUEST_SIZE => 131072;
 
 use constant HAS_INET6        => eval { AF_INET6 && socket my $ipv6_socket, AF_INET6, SOCK_DGRAM, 0 };
+
+use constant EINTR            => exists &Errno::EINTR ? &Errno::EINTR : -1;
+use constant EAGAIN           => exists &Errno::EAGAIN ? &Errno::EAGAIN : -1;
+use constant EWOULDBLOCK      => exists &Errno::EWOULDBLOCK ? &Errno::EWOULDBLOCK : -1;
+
 
 my $null_io = do { open my $io, "<", \""; $io }; #"
 
@@ -51,6 +58,13 @@ sub new {
         ipv6                 => $args{ipv6},
         ssl_key_file         => $args{ssl_key_file},
         ssl_cert_file        => $args{ssl_cert_file},
+        user                 => $args{user},
+        group                => $args{group},
+        umask                => $args{umask},
+        daemonize            => $args{daemonize},
+        pid                  => $args{pid},
+        error_log            => $args{error_log},
+        quiet                => $args{quiet} || $args{q} || $ENV{PLACK_QUIET},
         min_reqs_per_child   => (
             defined $args{min_reqs_per_child}
                 ? $args{min_reqs_per_child} : undef,
@@ -72,12 +86,22 @@ sub new {
         is_multiprocess      => Plack::Util::FALSE,
         _using_defer_accept  => undef,
         _unlink              => [],
+        _sigint              => 'INT',
     }, $class;
 
+    # Windows 7 and previous have bad SIGINT handling
+    if ($^O eq 'MSWin32') {
+        require Win32;
+        my @v = Win32::GetOSVersion();
+        if ($v[1]*1000 + $v[2] < 6_002) {
+            $self->{_sigint} = 'TERM';
+        }
+    };
+
     if ($args{max_workers} && $args{max_workers} > 1) {
-        Carp::carp(
+        die(
             "Threading in $class is deprecated. Falling back to the single thread mode. ",
-            "If you need more workers, use Starman, Starlet or Thrall instead and run like `plackup -s Thrall`",
+            "If you need more workers, use Thrall instead and run like `plackup -s Thrall`",
         );
     }
 
@@ -93,28 +117,28 @@ sub run {
 sub prepare_socket_class {
     my($self, $args) = @_;
 
-    if ($self->{socket} and ($self->{ssl} or $self->{ipv6})) {
-        Carp::croak("UNIX socket and either SSL or IPv6 are not supported at the same time. Choose one.");
+    if ($self->{socket} and ($self->{port} or $self->{ipv6})) {
+        die "UNIX socket and ether IPv4 or IPv6 are not supported at the same time.\n";
     }
 
-    if ($self->{ssl} and $self->{ipv6}) {
-        Carp::croak("SSL and IPv6 are not supported at the same time (yet). Choose one.");
+    if ($self->{ssl} and ($self->{socket} or $self->{ipv6})) {
+        die "SSL and either UNIX socket or IPv6 are not supported at the same time.\n";
     }
 
     if ($self->{socket}) {
         try { require IO::Socket::UNIX; 1 }
-            or Carp::croak("UNIX socket suport requires IO::Socket::UNIX");
+            or die "UNIX socket suport requires IO::Socket::UNIX\n";
         $args->{Local} =~ s/^@/\0/; # abstract socket address
         return "IO::Socket::UNIX";
     } elsif ($self->{ssl}) {
         try { require IO::Socket::SSL; 1 }
-            or Carp::croak("SSL suport requires IO::Socket::SSL");
+            or die "SSL suport requires IO::Socket::SSL\n";
         $args->{SSL_key_file}  = $self->{ssl_key_file};
         $args->{SSL_cert_file} = $self->{ssl_cert_file};
         return "IO::Socket::SSL";
     } elsif ($self->{ipv6}) {
         try { require IO::Socket::IP; 1 }
-            or Carp::croak("IPv6 support requires IO::Socket::IP");
+            or die "IPv6 support requires IO::Socket::IP\n";
         $self->{host}      ||= '::';
         $args->{LocalAddr} ||= '::';
         return "IO::Socket::IP";
@@ -137,10 +161,15 @@ sub setup_listener {
         ReuseAddr => 1,
     );
 
+    my $proto = $self->{ssl} ? 'https' : 'http';
+    my $listening = $self->{socket} ? "socket $self->{socket}" : "port $self->{port}";
+
     my $class = $self->prepare_socket_class(\%args);
     $self->{listen_sock} ||= $class->new(%args)
-        or die sprintf "failed to listen to %s: $!", $self->{socket}
-            ? "socket $self->{socket}" : "port $self->{port}";
+        or die "failed to listen to $listening: $!\n";
+
+    print STDERR "Starting $self->{server_software} $proto server listening at $listening\n"
+        unless $self->{quiet};
 
     my $family = Socket::sockaddr_family(getsockname($self->{listen_sock}));
     $self->{_listen_sock_is_unix} = $family == AF_UNIX;
@@ -153,10 +182,10 @@ sub setup_listener {
     }
 
     if ($self->{_listen_sock_is_unix} && not $args{Local} =~ /^\0/) {
-        push @{$self->{_unlink}}, $args{Local};
+        $self->_add_to_unlink(File::Spec->rel2abs($args{Local}));
     }
 
-    $self->{server_ready}->({ %$self, proto => $self->{ssl} ? 'https' : 'http' });
+    $self->{server_ready}->({ %$self, proto => $proto });
 }
 
 sub accept_loop {
@@ -166,6 +195,16 @@ sub accept_loop {
 
     $self->{can_exit} = 1;
     my $is_keepalive = 0;
+    my $sigint = $self->{_sigint};
+    local $SIG{$sigint} = local $SIG{TERM} = sub {
+        my ($sig) = @_;
+        warn "*** SIG$sig received thread ", threads->tid if DEBUG;
+        exit 0 if $self->{can_exit};
+        $self->{term_received}++;
+        exit 0
+            if ($is_keepalive && $self->{can_exit}) || $self->{term_received} > 1;
+        # warn "server termination delayed while handling current HTTP request";
+    };
 
     # Threads don't like simple 'IGNORE'
     local $SIG{PIPE} = sub { 'IGNORE' };
@@ -175,11 +214,11 @@ sub accept_loop {
         if (my ($conn,$peer) = $self->{listen_sock}->accept) {
             $self->{_is_deferred_accept} = $self->{_using_defer_accept};
             $conn->blocking(0)
-                or die "failed to set socket to nonblocking mode:$!";
+                or die "failed to set socket to nonblocking mode:$!\n";
             my ($peerport, $peerhost, $peeraddr) = (0, undef, undef);
             if ($self->{_listen_sock_is_tcp}) {
                 $conn->setsockopt(IPPROTO_TCP, TCP_NODELAY, 1)
-                    or die "setsockopt(TCP_NODELAY) failed:$!";
+                    or die "setsockopt(TCP_NODELAY) failed:$!\n";
                 local $@;
                 if (HAS_INET6 && Socket::sockaddr_family(getsockname($conn)) == AF_INET6) {
                     ($peerport, $peerhost) = Socket::unpack_sockaddr_in6($peer);
@@ -363,7 +402,7 @@ sub handle_connection {
             $self->_handle_response($env->{SERVER_PROTOCOL}, $_[0], $conn, \$use_keepalive);
         });
     } else {
-        die "Bad response $res";
+        die "Bad response $res\n";
     }
     if ($self->{term_received}) {
         threads->exit;
@@ -383,6 +422,7 @@ sub _handle_response {
     for (my $i = 0; $i < @$headers; $i += 2) {
         my $k = $headers->[$i];
         my $v = $headers->[$i + 1];
+        $v = '' if not defined $v;
         my $lck = lc $k;
         if ($lck eq 'connection') {
             $$use_keepalive_r = undef
@@ -430,11 +470,11 @@ sub _handle_response {
 
     }
 
-    unshift @lines, "HTTP/1.1 $status_code @{[ HTTP::Status::status_message($status_code) ]}\015\012";
+    unshift @lines, "HTTP/1.1 $status_code @{[ HTTP::Status::status_message($status_code) || 'Unknown' ]}\015\012";
     push @lines, "\015\012";
 
     if (defined $body && ref $body eq 'ARRAY' && @$body == 1
-            && length $body->[0] < 8192) {
+            && defined $body->[0] && length $body->[0] < 8192) {
         # combine response header and small request body
         my $buf = $body->[0];
         if ($use_chunked ) {
@@ -553,6 +593,196 @@ sub write_all {
         $off += $ret;
     }
     return length $buf;
+}
+
+sub _add_to_unlink {
+    my ($self, $filename) = @_;
+    push @{$self->{_unlink}}, File::Spec->rel2abs($filename);
+}
+
+sub _daemonize {
+    my $self = shift;
+
+    if ($^O eq 'MSWin32') {
+        foreach my $arg (qw(daemonize pid)) {
+            die "$arg parameter is not supported on this platform ($^O)\n" if $self->{$arg};
+        }
+    }
+
+    my ($pidfh, $pidfile);
+    if ($self->{pid}) {
+        $pidfile = File::Spec->rel2abs($self->{pid});
+        if (defined *Fcntl::O_EXCL{CODE}) {
+            sysopen $pidfh, $pidfile, Fcntl::O_WRONLY|Fcntl::O_CREAT|Fcntl::O_EXCL
+                                               or die "Cannot open pid file: $self->{pid}: $!\n";
+        } else {
+            open $pidfh, '>', $pidfile         or die "Cannot open pid file: $self->{pid}: $!\n";
+        }
+    }
+
+    if (defined $self->{error_log}) {
+        open STDERR, '>>', $self->{error_log}  or die "Cannot open error log file: $self->{error_log}: $!\n";
+    }
+
+    if ($self->{daemonize}) {
+
+        chdir File::Spec->rootdir              or die "Cannot chdir to root directory: $!\n";
+
+        open my $devnull,  '+>', File::Spec->devnull or die "Cannot open null device: $!\n";
+
+        open STDIN, '>&', $devnull             or die "Cannot dup null device: $!\n";
+        open STDOUT, '>&', $devnull            or die "Cannot dup null device: $!\n";
+
+        defined(my $pid = fork)                or die "Cannot fork: $!\n";
+        if ($pid) {
+            if ($self->{pid} and $pid) {
+                print $pidfh "$pid\n"          or die "Cannot write pidfile $self->{pid}: $!\n";
+                close $pidfh;
+                open STDERR, '>&', $devnull    or die "Cannot dup null device: $!\n";
+            }
+            exit;
+        }
+
+        close $pidfh if $pidfh;
+
+        if ($Config::Config{d_setsid}) {
+            POSIX::setsid()                    or die "Cannot setsid: $!\n";
+        }
+
+        if (not defined $self->{error_log}) {
+            open STDERR, '>&', $devnull        or die "Cannot dup null device: $!\n";
+        }
+    }
+
+    if ($pidfile) {
+        $self->_add_to_unlink($pidfile);
+    }
+
+    return;
+}
+
+sub _setup_privileges {
+    my ($self) = @_;
+
+    if (defined $self->{group}) {
+        if (not $Config::Config{d_setegid}) {
+            die "group parameter is not supported on this platform ($^O)\n";
+        }
+        if ($self->_get_gid($self->{group}) ne $EGID) {
+            warn "*** setting group to \"$self->{group}\"" if DEBUG;
+            $self->_set_gid($self->{group});
+        }
+    }
+
+    if (defined $self->{user}) {
+        if (not $Config::Config{d_seteuid}) {
+            die "user parameter is not supported on this platform ($^O)\n";
+        }
+        if ($self->_get_uid($self->{user}) ne $EUID) {
+            warn "*** setting user to \"$self->{user}\"" if DEBUG;
+            $self->_set_uid($self->{user});
+        }
+    }
+
+    if (defined $self->{umask}) {
+        if (not $Config::Config{d_umask}) {
+            die "umask parameter is not supported on this platform ($^O)\n";
+        }
+        warn "*** setting umask to \"$self->{umask}\"" if DEBUG;
+        umask(oct($self->{umask}));
+    }
+
+    return;
+}
+
+# Taken from Net::Server::Daemonize
+sub _get_uid {
+    my ($self, $user) = @_;
+    my $uid  = ($user =~ /^(\d+)$/) ? $1 : getpwnam($user);
+    die "No such user \"$user\"\n" unless defined $uid;
+    return $uid;
+}
+
+# Taken from Net::Server::Daemonize
+sub _get_gid {
+    my ($self, @groups) = @_;
+    my @gid;
+
+    foreach my $group ( split( /[, ]+/, join(" ",@groups) ) ){
+        if( $group =~ /^\d+$/ ){
+            push @gid, $group;
+        }else{
+            my $id = getgrnam($group);
+            die "No such group \"$group\"\n" unless defined $id;
+            push @gid, $id;
+        }
+    }
+
+    die "No group found in arguments.\n" unless @gid;
+    return join(" ",$gid[0],@gid);
+}
+
+# Taken from Net::Server::Daemonize
+sub _set_uid {
+    my ($self, $user) = @_;
+    my $uid = $self->_get_uid($user);
+
+    eval { POSIX::setuid($uid) };
+    if ($UID != $uid || $EUID != $uid) { # check $> also (rt #21262)
+        $UID = $EUID = $uid; # try again - needed by some 5.8.0 linux systems (rt #13450)
+        if ($UID != $uid) {
+            die "Couldn't become uid \"$uid\": $!\n";
+        }
+    }
+
+    return 1;
+}
+
+# Taken from Net::Server::Daemonize
+sub _set_gid {
+    my ($self, @groups) = @_;
+    my $gids = $self->_get_gid(@groups);
+    my $gid  = (split /\s+/, $gids)[0];
+    eval { $) = $gids }; # store all the gids - this is really sort of optional
+
+    eval { POSIX::setgid($gid) };
+    if (! grep {$gid == $_} split /\s+/, $GID) { # look for any valid id in the list
+        die "Couldn't become gid \"$gid\": $!\n";
+    }
+
+    return 1;
+}
+
+sub _sleep {
+    my ($self, $t) = @_;
+    select undef, undef, undef, $t if $t;
+}
+
+sub _create_thread {
+    my ($self, $app) = @_;
+    my $thr = threads->create( {context => 'void'},
+        sub {
+            my ($self, $app) = @_;
+            warn "*** thread ", threads->tid, " starting" if DEBUG;
+            eval {
+                $self->accept_loop($app, $self->_calc_reqs_per_child());
+            };
+            warn $@ if $@;
+            warn "*** thread ", threads->tid, " ending" if DEBUG;
+        },
+        $self, $app
+    );
+}
+
+sub _calc_reqs_per_child {
+    my $self = shift;
+    my $max = $self->{max_reqs_per_child};
+    if (my $min = $self->{min_reqs_per_child}) {
+        srand((rand() * 2 ** 30) ^ $$ ^ time);
+        return $max - int(($max - $min + 1) * rand);
+    } else {
+        return $max;
+    }
 }
 
 sub DESTROY {

@@ -8,15 +8,20 @@ our $VERSION = '0.0300';
 use base qw(Thrall::Server);
 
 use threads;
+
+use Config ();
+use English '-no_match_vars';
+use Fcntl ();
+use File::Spec;
+use POSIX ();
 use Plack::Util;
 
 use constant DEBUG => $ENV{PERL_THRALL_DEBUG};
 
 sub new {
-    my ($klass, %args) = @_;
+    my ($class, %args) = @_;
 
     # setup before instantiation
-    my $listen_sock;
     my $max_workers = 10;
     for (qw(max_workers workers)) {
         $max_workers = delete $args{$_}
@@ -24,22 +29,17 @@ sub new {
     }
 
     # instantiate and set the variables
-    my $self = $klass->SUPER::new(%args);
-    if (threads->can('isthread')) {
-        # forks as threads emulation
-        $self->{is_multithread}  = Plack::Util::FALSE;
-        $self->{is_multiprocess} = Plack::Util::TRUE;
-    }
-    else {
-        # real threads
-        $self->{is_multithread}  = Plack::Util::TRUE;
-        $self->{is_multiprocess} = Plack::Util::FALSE;
-    };
-    $self->{listen_sock} = $listen_sock
-        if $listen_sock;
+    my $self = $class->SUPER::new(%args);
+
+    $self->{is_multithread}  = Plack::Util::TRUE;
+    $self->{is_multiprocess} = Plack::Util::FALSE;
+
     $self->{max_workers} = $max_workers;
 
-    $self->{main_thread} = threads->self;
+    $self->{main_thread} = threads->tid;
+    $self->{processes} = +{};
+
+    $self->{_kill_stalled_processes_delay} = 10;
 
     $self;
 }
@@ -47,24 +47,22 @@ sub new {
 sub run {
     my($self, $app) = @_;
 
+    $self->_daemonize();
+
     # EV does not work with threads
     $ENV{PERL_ANYEVENT_MODEL} = 'Perl';
     $ENV{PERL_ANYEVENT_IO_MODEL} = 'Perl';
 
-    # Windows 7 and previous have bad SIGINT handling
-    my $sigint = 'INT';
-    if ($^O eq 'MSWin32') {
-        require Win32;
-        my @v = Win32::GetOSVersion();
-        if ($v[1]*1000 + $v[2] < 6_002) {
-            $sigint = 'NONE';
-        }
-    };
-
+    warn "*** starting main thread ", threads->tid if DEBUG;
     $self->setup_listener();
+
+    $self->_setup_privileges();
 
     # Threads don't like simple 'IGNORE'
     local $SIG{PIPE} = sub { 'IGNORE' };
+
+    my $sigint = $self->{_sigint};
+    my $sigterm = $^O eq 'MSWin32' ? 'KILL' : 'TERM';
 
     if ($self->{max_workers} != 0) {
         if ($self->{thread_stack_size}) {
@@ -102,6 +100,8 @@ sub run {
         foreach my $thr (threads->list) {
             $thr->detach;
         }
+        warn "*** stopping main thread ", threads->tid if DEBUG;
+        exit 0;
     } else {
         # run directly, mainly for debugging
         local $SIG{$sigint} = local $SIG{TERM} = sub {
@@ -113,38 +113,6 @@ sub run {
             $self->accept_loop($app, $self->_calc_reqs_per_child());
             $self->_sleep($self->{spawn_interval});
         }
-    }
-}
-
-sub _sleep {
-    my ($self, $t) = @_;
-    select undef, undef, undef, $t if $t;
-}
-
-sub _create_thread {
-    my ($self, $app) = @_;
-    my $thr = threads->create( {context => 'void'},
-        sub {
-            my ($self, $app) = @_;
-            warn "*** thread ", threads->tid, " starting" if DEBUG;
-            eval {
-                $self->accept_loop($app, $self->_calc_reqs_per_child());
-            };
-            warn $@ if $@;
-            warn "*** thread ", threads->tid, " ending" if DEBUG;
-        },
-        $self, $app
-    );
-}
-
-sub _calc_reqs_per_child {
-    my $self = shift;
-    my $max = $self->{max_reqs_per_child};
-    if (my $min = $self->{min_reqs_per_child}) {
-        srand((rand() * 2 ** 30) ^ $$ ^ time);
-        return $max - int(($max - $min + 1) * rand);
-    } else {
-        return $max;
     }
 }
 

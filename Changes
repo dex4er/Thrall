@@ -1,6 +1,11 @@
 0.0300  2014-06-28      Piotr Roszatycki <dexter@cpan.org>
 
 * Based on Starlight 0.0302
+* Does not hang up on daemonize without error log file.
+* Bugfix for streaming mode (Use of uninitialized value).
+* Requirement for Time::HiRes is optional.
+* Support for "quiet", "user", "group", "umask", "daemonize", "pid" and
+  "error-log" options.
 
 0.0202  2014-01-21      Piotr Roszatycki <dexter@cpan.org>
 
