@@ -30,7 +30,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0202';
+our $VERSION = '0.0300';
 
 1;
 

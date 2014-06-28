@@ -1,3 +1,7 @@
+0.0300  2014-06-28      Piotr Roszatycki <dexter@cpan.org>
+
+* Based on Starlight 0.0302
+
 0.0202  2014-01-21      Piotr Roszatycki <dexter@cpan.org>
 
 * Handle SIGINT (ctrl-c) gracefully.
