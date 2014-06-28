@@ -15,11 +15,6 @@ if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005 and not $ENV{PERL_TEST_BR
     exit 0;
 }
 
-if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
-    plan skip_all => 'Win32::Process required';
-    exit 0;
-}
-
 test_tcp(
     client => sub {
         my $port = shift;

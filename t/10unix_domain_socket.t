@@ -16,11 +16,6 @@ if ($^O eq 'MSWin32') {
     exit 0;
 }
 
-if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
-    plan skip_all => 'Win32::Process required';
-    exit 0;
-}
-
 my ($fh, $filename) = File::Temp::tempfile(UNLINK=>1);
 unlink($filename);
 

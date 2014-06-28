@@ -14,11 +14,6 @@ if ($^O eq 'MSWin32' and not $ENV{PERL_TEST_BROKEN}) {
     exit 0;
 }
 
-if ($^O eq 'cygwin' and not eval { require Win32::Process; }) {
-    plan skip_all => 'Win32::Process required';
-    exit 0;
-}
-
 $Plack::Test::Impl = 'Server';
 $ENV{PLACK_SERVER} = 'Thrall';
 $ENV{PLACK_QUIET} = 1;
