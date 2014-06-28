@@ -1,26 +1,28 @@
 NAME
-    Thrall - a simple PSGI/Plack HTTP server which uses threads
+    thrall - a simple PSGI/Plack HTTP server which uses threads
 
 SYNOPSIS
-      $ plackup -s Thrall --port=80 [options] your-app.psgi
+      $ thrall --workers=20 --max-reqs-per-child=100 app.psgi
 
-      $ plackup -s Thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt [options] your-app.psgi
+      $ thrall --port=80 --ipv6=1 app.psgi
 
-      $ plackup -s Thrall --port=80 --ipv6 [options] your-app.psgi
+      $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
 
-      $ plackup -s Thrall --socket=/tmp/thrall.sock [options] your-app.psgi
+      $ thrall --socket=/tmp/thrall.sock app.psgi
 
 DESCRIPTION
     Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
     threads instead pre-forking, so it works correctly on Windows. It is
     pure-Perl implementation which doesn't require any XS package.
 
-NOTES
     Thrall was started as a fork of Starlet server. It has almost the same
     code as Starlet and it was adapted to use threads instead fork().
 
+OPTIONS
+    See plackup and Thrall for available command line options.
+
 SEE ALSO
-    Starlet, Starman
+    Starlight, Starlet, Starman
 
 LIMITATIONS
     See threads and perlthrtut to read about limitations for PSGI
@@ -58,9 +60,9 @@ BUGS
 
   Reporting
     If you find the bug or want to implement new features, please report it
-    at https://github.com/dex4er/Thrall/issues
+    at https://github.com/dex4er/Starlight/issues
 
-    The code repository is available at http://github.com/dex4er/Thrall
+    The code repository is available at http://github.com/dex4er/Starlight
 
 AUTHORS
     Piotr Roszatycki <dexter@cpan.org>
@@ -76,6 +78,12 @@ AUTHORS
     Some code based on Plack:
 
     Tatsuhiko Miyagawa
+
+    Some code based on Net::Server::Daemonize:
+
+    Jeremy Howard <j+daemonize@howard.fm>
+
+    Paul Seamons <paul@seamons.com>
 
 LICENSE
     Copyright (c) 2013-2014 Piotr Roszatycki <dexter@cpan.org>.

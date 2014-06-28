@@ -16,11 +16,20 @@ my $module = 'Thrall';
 
 my $build = Module::Build::My->new(
     module_name             => $module,
+    dist_version_from       => 'script/thrall.pl',
     license                 => 'perl',
     requires                => {
         'perl'                  => 5.008_001,
-        $Config{useithreads} ? ('threads' => 1.73) : ('forks' => 0),
         'Plack'                 => 0.9920,
+        $Config{useithreads} ? ('threads' => 1.73) : ('forks' => 0),
+    },
+    recommends              => {
+        $^O eq 'cygwin' ? ('Win32::Process' => 0) : (),
+    },
+    suggests                => {
+        'IO::Socket::IO'        => 0,
+        'IO::Socket::SSL'       => 0,
+        'Net::SSLeay'           => '1.49',
     },
     build_requires          => {
         'HTTP::Tiny'            => 0,
@@ -48,9 +57,5 @@ my $build = Module::Build::My->new(
         },
     },
 );
-
-if ($^O eq 'MSWin32' and $] >= 5.016 and $] < 5.019005) {
-    $build->log_info("Warning: this version of Perl has broken GLOB in threads and Thrall might works incorrectly \n");
-}
 
 $build->create_build_script;

@@ -13,8 +13,9 @@ rm -f MANIFEST
 if [ -f .travis.yml ]; then
     grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&\n/' > README.md
 fi
+dist_version_from=`grep dist_version_from Build.PL | sed "s%.*=> '%%; s%',%%"`
 $PERL -MPod::Markdown -e '$p=Pod::Markdown->new;$p->parse_from_filehandle(\*STDIN);print $p->as_markdown' \
-    < lib/$(grep ^name: MYMETA.yml | sed 's/^name: //; s,-,/,g').pm \
+    < ${dist_version_from:-lib/$(grep ^name: MYMETA.yml | sed 's/^name: //; s,-,/,g').pm} \
     | $PERL -pe 'sub a { $_[0]=~tr/ /-/; $_[0] } s,[(]http://search.cpan.org/perldoc[?]([^#)]*)(#[^)]*)?[)],a("(http://metacpan.org/module/$1$2)"),eg' \
     >> README.md
 
