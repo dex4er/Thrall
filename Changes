@@ -4,6 +4,7 @@
 * Does not hang up on daemonize without error log file.
 * Bugfix for streaming mode (Use of uninitialized value).
 * Requirement for Time::HiRes is optional.
+* Recommends Time::TZOffset on Windows.
 * Support for "quiet", "user", "group", "umask", "daemonize", "pid" and
   "error-log" options.
 
