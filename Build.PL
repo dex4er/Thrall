@@ -23,13 +23,11 @@ my $build = Module::Build::My->new(
         'Plack'                 => 0.9920,
         $Config{useithreads} ? ('threads' => 1.73) : ('forks' => 0),
     },
-    recommends              => {
-        $^O eq 'MSWin32'     ? ('Time::TZOffset' => 0) : (),
-    },
     suggests                => {
         'IO::Socket::IO'        => 0,
         'IO::Socket::SSL'       => 0,
         'Net::SSLeay'           => '1.49',
+        $^O eq 'MSWin32'     ? ('Time::TZOffset' => 0) : (),
     },
     build_requires          => {
         'HTTP::Tiny'            => 0,
