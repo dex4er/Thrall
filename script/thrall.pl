@@ -37,7 +37,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0300';
+our $VERSION = '0.0301';
 
 use Plack::Runner;
 
