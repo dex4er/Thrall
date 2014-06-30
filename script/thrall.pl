@@ -4,33 +4,7 @@
 
 thrall - a simple PSGI/Plack HTTP server which uses threads
 
-=head1 SYNOPSIS
-
-  $ thrall --workers=20 --max-reqs-per-child=100 app.psgi
-
-  $ thrall --port=80 --ipv6=1 app.psgi
-
-  $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
-
-  $ thrall --socket=/tmp/thrall.sock app.psgi
-
-=head1 DESCRIPTION
-
-Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
-threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
-implementation which doesn't require any XS package.
-
-Thrall was started as a fork of L<Starlet> server. It has almost the same code
-as L<Starlet> and it was adapted to use threads instead fork().
-
-=head1 OPTIONS
-
-See L<plackup> and L<Thrall> for available command line options.
-
-=for readme stop
-
 =cut
-
 
 use 5.008_001;
 
@@ -51,9 +25,38 @@ my $runner = Plack::Runner->new(
     loader     => 'Delayed',
     version_cb => \&version,
 );
+
 $runner->parse_options(@ARGV);
+
+if ($runner->{help}) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage(-verbose => 1, -input => \*DATA);
+}
+
 $runner->run;
 
+__DATA__
+
+=head1 SYNOPSIS
+
+  $ thrall --workers=20 --max-reqs-per-child=100 app.psgi
+
+  $ thrall --port=80 --ipv6=1 app.psgi
+
+  $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+
+  $ thrall --socket=/tmp/thrall.sock app.psgi
+
+=head1 DESCRIPTION
+
+Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
+threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
+implementation which doesn't require any XS package.
+
+Thrall was started as a fork of L<Starlet> server. It has almost the same code
+as L<Starlet> and it was adapted to use threads instead fork().
+
+=for readme stop
 
 =head1 OPTIONS
 
