@@ -10,5 +10,6 @@ install:
   - cpanm --force --uninstall IO::Socket::SSL
 script: ./Dist.SH
 perl:
+  - "5.20-extras"
   - "5.20"
   - "5.10"
