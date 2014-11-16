@@ -25,10 +25,6 @@ as [Starlet](https://metacpan.org/pod/Starlet) and it was adapted to use threads
 
 # OPTIONS
 
-See [plackup](https://metacpan.org/pod/plackup) and [Thrall](https://metacpan.org/pod/Thrall) for available command line options.
-
-# OPTIONS
-
 In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), thrall accepts
 following options(s).
 
