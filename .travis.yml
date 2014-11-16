@@ -10,8 +10,5 @@ install:
   - cpanm --force --uninstall IO::Socket::SSL
 script: ./Dist.SH
 perl:
-  - 5.18
-  - 5.8
-branch:
-  only:
-    - master
+  - "5.20"
+  - "5.10"
