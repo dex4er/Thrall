@@ -1,6 +1,7 @@
 0.0303  2015-08-02      Piotr Roszatycki <dexter@cpan.org>
 
-*
+* The default protocol is HTTP/1.0.
+* Bugfix for 08chunked_req.t: should not use external files.
 
 0.0302  2014-11-16      Piotr Roszatycki <dexter@cpan.org>
 
