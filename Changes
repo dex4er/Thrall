@@ -1,3 +1,7 @@
+0.0303  2015-08-02      Piotr Roszatycki <dexter@cpan.org>
+
+*
+
 0.0302  2014-11-16      Piotr Roszatycki <dexter@cpan.org>
 
 * Workaround for HTTP::Tiny + Test::TCP conflict, which prevented installing
