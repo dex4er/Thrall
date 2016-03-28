@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)[![CPAN version](https://badge.fury.io/pl/Thrall.svg)](https://badge.fury.io/pl/Thrall)n
+[![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)[![CPAN version](https://badge.fury.io/pl/Thrall.svg)](https://badge.fury.io/pl/Thrall)
+
 # NAME
 
 thrall - a simple PSGI/Plack HTTP server which uses threads

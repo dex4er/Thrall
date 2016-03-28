@@ -11,7 +11,8 @@ $PERL Build.PL
 rm -f MANIFEST
 : > README.md
 if [ -f .travis.yml ]; then
-    grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&\n/' > README.md
+    grep 'Build Status' .travis.yml | sed 's/^# //; s/.$/&/' > README.md
+    echo >> README.md
 fi
 dist_version_from=`grep dist_version_from Build.PL | sed "s%.*=> '%%; s%',%%"`
 $PERL -MPod::Markdown -e '$p=Pod::Markdown->new;$p->parse_from_filehandle(\*STDIN);print $p->as_markdown' \
