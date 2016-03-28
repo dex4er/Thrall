@@ -30,7 +30,9 @@ cd *-[0-9]*.[0-9]*
 $PERL Build.PL
 $PERL Build
 $PERL Build test
-$PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib xt));exit($a->run ? 0 : 1)'
+if [ -z "$TEST_SKIP_EXTRA" ] || [ "$TEST_SKIP_EXTRA" = 0 ]; then
+    $PERL -MApp::Prove -e '$a=App::Prove->new;$a->process_args(qw(-Iblib/lib xt));exit($a->run ? 0 : 1)'
+fi
 
 if [ "$1" = sign ]; then
     $PERL Build distsign

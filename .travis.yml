@@ -7,9 +7,22 @@ install:
   - sudo apt-get install -qq spell
   - cpanm --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton
   - cpanm --with-recommends --installdeps --notest --skip-satisfied .
-  - cpanm --force --uninstall IO::Socket::SSL
+  - cpanm --force --uninstall IO::Socket::SSL || true
 script: ./Dist.SH
-perl:
-  - "5.20-extras"
-  - "5.20"
-  - "5.10"
+matrix:
+  include:
+  - perl: "5.22-extras"
+  - perl: "5.22"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.20-extras"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.18-extras"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.16-extras"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.14-extras"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.12-extras"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.10-extras"
+    env: TEST_SKIP_EXTRA=1
