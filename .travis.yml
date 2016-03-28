@@ -1,4 +1,4 @@
-# [![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)
+# [![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)[![CPAN version](https://badge.fury.io/pl/Thrall.svg)](https://badge.fury.io/pl/Thrall)
 
 language: perl
 before_install:

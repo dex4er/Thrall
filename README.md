@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)
-
+[![Build Status](https://travis-ci.org/dex4er/Thrall.png?branch=master)](https://travis-ci.org/dex4er/Thrall)[![CPAN version](https://badge.fury.io/pl/Thrall.svg)](https://badge.fury.io/pl/Thrall)n
 # NAME
 
 thrall - a simple PSGI/Plack HTTP server which uses threads
@@ -198,13 +197,13 @@ Tatsuhiko Miyagawa
 
 Some code based on Net::Server::Daemonize:
 
-Jeremy Howard <j+daemonize@howard.fm>
+Jeremy Howard &lt;j+daemonize@howard.fm>
 
 Paul Seamons <paul@seamons.com>
 
 # LICENSE
 
-Copyright (c) 2013-2015 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2016 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
