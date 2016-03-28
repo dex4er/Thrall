@@ -1,6 +1,6 @@
 0.0304  2016-03-28      Piotr Roszatycki <dexter@cpan.org>
 
-*
+* Use address 127.0.0.1 rather than localhost for testing.
 
 0.0303  2015-08-02      Piotr Roszatycki <dexter@cpan.org>
 

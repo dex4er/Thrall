@@ -27,7 +27,7 @@ test_tcp(
         my $port = shift;
         sleep 1;
         my $sock = IO::Socket::INET->new(
-            PeerAddr => "localhost:$port",
+            PeerAddr => "127.0.0.1:$port",
             Proto => 'tcp',
         );
         ok($sock);

@@ -59,7 +59,7 @@ test_tcp(
                 SSL_key_file  => $server_key,
            }
         );
-        my $res = $ua->get("https://localhost:$port/");
+        my $res = $ua->get("https://127.0.0.1:$port/");
         ok $res->{success};
         like $res->{headers}{server}, qr/Thrall/;
         is $res->{content}, 'https';
@@ -69,7 +69,7 @@ test_tcp(
         my $port = shift;
         Thrall::Server->new(
             quiet         => 1,
-            host          => 'localhost',
+            host          => '127.0.0.1',
             port          => $port,
             ssl           => 1,
             ssl_key_file  => $server_key,

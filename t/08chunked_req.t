@@ -53,7 +53,7 @@ test_psgi $app, sub {
     open my $fh, "<:raw", $filename;
     local $/ = \1024;
 
-    my $req = HTTP::Request->new(POST => "http://localhost/");
+    my $req = HTTP::Request->new(POST => "http://127.0.0.1/");
     $req->content(sub { scalar <$fh> });
 
     my $res = $cb->($req);

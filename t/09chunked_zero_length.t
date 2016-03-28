@@ -43,7 +43,7 @@ test_psgi $app, sub {
 
     sleep 1;
 
-    my $req = HTTP::Request->new(GET => "http://localhost/");
+    my $req = HTTP::Request->new(GET => "http://127.0.0.1/");
     my $res = $cb->($req);
 
     is $res->content, "ContentAgain";
