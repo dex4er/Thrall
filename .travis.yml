@@ -20,11 +20,13 @@ matrix:
     env: TEST_SKIP_EXTRA=1
   - perl: "5.18-extras"
     env: TEST_SKIP_EXTRA=1
-  - perl: "5.16-extras"
+  - perl: "5.16"
     env: TEST_SKIP_EXTRA=1
-  - perl: "5.14-extras"
+  - perl: "5.14"
     env: TEST_SKIP_EXTRA=1
-  - perl: "5.12-extras"
+  - perl: "5.12"
     env: TEST_SKIP_EXTRA=1
-  - perl: "5.10-extras"
+  - perl: "5.10"
+    env: TEST_SKIP_EXTRA=1
+  - perl: "5.8"
     env: TEST_SKIP_EXTRA=1
