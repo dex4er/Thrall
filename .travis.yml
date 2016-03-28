@@ -1,11 +1,14 @@
 # [![Build Status](https://travis-ci.org/dex4er/Thrall.svg?branch=master)](https://travis-ci.org/dex4er/Thrall)[![CPAN version](https://badge.fury.io/pl/Thrall.svg)](https://metacpan.org/release/Thrall)
 
+sudo: false
 language: perl
-before_install:
-  - sudo apt-get update -qq
+addons:
+  apt:
+    packages:
+    - aspell
 install:
-  - sudo apt-get install -qq spell
-  - cpanm --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton
+  - test -n "$TEST_SKIP_EXTRA" || sudo apt-get install -qq spell
+  - test -n "$TEST_SKIP_EXTRA" || cpanm --with-recommends --installdeps --notest --skip-satisfied git://github.com/dex4er/perl-DEXTER-Module-Skeleton
   - cpanm --with-recommends --installdeps --notest --skip-satisfied .
   - cpanm --force --uninstall IO::Socket::SSL || true
 script: ./Dist.SH
