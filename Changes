@@ -1,3 +1,7 @@
+0.0304  2016-03-28      Piotr Roszatycki <dexter@cpan.org>
+
+*
+
 0.0303  2015-08-02      Piotr Roszatycki <dexter@cpan.org>
 
 * The default protocol is HTTP/1.0.
