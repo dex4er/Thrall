@@ -11,7 +11,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0304';
+our $VERSION = '0.0305';
 
 use Plack::Runner;
 

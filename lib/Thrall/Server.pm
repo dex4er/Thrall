@@ -3,7 +3,7 @@ package Thrall::Server;
 use strict;
 use warnings;
 
-our $VERSION = '0.0304';
+our $VERSION = '0.0305';
 
 use Config;
 
@@ -58,6 +58,9 @@ sub new {
         ipv6                 => $args{ipv6},
         ssl_key_file         => $args{ssl_key_file},
         ssl_cert_file        => $args{ssl_cert_file},
+        ssl_ca_file          => $args{ssl_ca_file},
+        ssl_client_ca_file   => $args{ssl_client_ca_file},
+        ssl_verify_mode      => $args{ssl_verify_mode},
         user                 => $args{user},
         group                => $args{group},
         umask                => $args{umask},
@@ -135,6 +138,9 @@ sub prepare_socket_class {
             or die "SSL suport requires IO::Socket::SSL\n";
         $args->{SSL_key_file}  = $self->{ssl_key_file};
         $args->{SSL_cert_file} = $self->{ssl_cert_file};
+        $args->{SSL_ca_file} = $self->{ssl_ca_file};
+        $args->{ssl_client_ca_file} = $self->{ssl_client_ca_file};
+        $args->{SSL_verify_mode} = $self->{ssl_verify_mode};
         return "IO::Socket::SSL";
     } elsif ($self->{ipv6}) {
         try { require IO::Socket::IP; 1 }

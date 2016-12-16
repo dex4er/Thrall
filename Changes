@@ -1,3 +1,7 @@
+0.0305  2016-12-16      Thomas Stinner <me@stinnux.de>
+
+* Allow setting of SSL CA and SSL Verification Mode
+
 0.0304  2016-03-28      Piotr Roszatycki <dexter@cpan.org>
 
 * Use address 127.0.0.1 rather than localhost for testing.
