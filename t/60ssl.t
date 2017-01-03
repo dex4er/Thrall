@@ -44,6 +44,8 @@ if (eval { require Acme::Override::INET; } ) {
 }
 
 my $ca_crt     = "$FindBin::Bin/../examples/ca.crt";
+my $client_crt = "$FindBin::Bin/../examples/client.crt";
+my $client_key = "$FindBin::Bin/../examples/client.key";
 my $server_crt = "$FindBin::Bin/../examples/localhost.crt";
 my $server_key = "$FindBin::Bin/../examples/localhost.key";
 
@@ -55,8 +57,8 @@ test_tcp(
             verify_SSL => 1,
             SSL_options => {
                 SSL_ca_file   => $ca_crt,
-                SSL_cert_file => $server_crt,
-                SSL_key_file  => $server_key,
+                SSL_cert_file => $client_crt,
+                SSL_key_file  => $client_key,
            }
         );
         my $res = $ua->get("https://127.0.0.1:$port/");
@@ -74,6 +76,9 @@ test_tcp(
             ssl           => 1,
             ssl_key_file  => $server_key,
             ssl_cert_file => $server_crt,
+            ssl_ca_file   => $ca_crt,
+            ssl_client_ca_file => $ca_crt,
+            ssl_verify_mode => 1,
         )->run(
             sub { [ 200, [], [$_[0]->{'psgi.url_scheme'}] ] },
         );
