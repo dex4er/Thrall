@@ -1,4 +1,4 @@
-0.0305  2016-12-16      Thomas Stinner <me@stinnux.de>
+0.0305  2017-01-03      Thomas Stinner <me@stinnux.de>
 
 * Allow setting of SSL CA and SSL Verification Mode
 
