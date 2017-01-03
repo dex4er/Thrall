@@ -68,7 +68,7 @@ Tatsuhiko Miyagawa
 
 =head1 LICENSE
 
-Copyright (c) 2013-2016 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2017 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
