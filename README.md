@@ -80,6 +80,21 @@ Specifies the path to SSL key file. (default: none)
 
 Specifies the path to SSL certificate file. (default: none)
 
+## --ssl-ca-file
+
+Specifies the path to SSL CA certificate file which will be a part of server's
+certificate chain. (default: none)
+
+## --ssl-client-ca-file
+
+Specifies the path to SSL CA certificate file for client verification.
+(default: none)
+
+## --ssl-verify-mode
+
+Specifies the verification mode for the client certificate.
+See ["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL#SSL_verify_mode) for details. (default: 0)
+
 ## --ipv6
 
 Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO::Socket::IP) module is required. (default: 0)
