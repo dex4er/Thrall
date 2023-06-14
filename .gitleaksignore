@@ -1,0 +1,6 @@
+b5533d17cc2b2d74970df8715d1fb5e414a4679e:examples/ca.key:private-key:1
+b5533d17cc2b2d74970df8715d1fb5e414a4679e:examples/client.key:private-key:1
+098ff40508f6d07081f9c2c77c1969a774e76da9:examples/localhost.key:private-key:1
+examples/ca.key:private-key:1
+examples/client.key:private-key:1
+examples/localhost.key:private-key:1

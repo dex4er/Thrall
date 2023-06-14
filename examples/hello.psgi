@@ -2,8 +2,21 @@
 
 # Simple PSGI application
 
-sub {
-    my $text = "Hello, world!\n";
+use strict;
+use warnings;
 
-    return [ 200, [ "Content-Type" => "text/plain", "Content-Length" => length($text) ], [ $text ] ];
+my $app = sub {
+    [
+        200, ['Content-Type' => 'text/html'],
+        ['<!DOCTYPE html><html><head><title>Hello, world!</title></head><body>Hello, world!</body></html>']
+    ]
+};
+
+use Plack::Builder;
+
+builder {
+    enable_if { $_[0]->{QUERY_STRING} =~ /foo/ } 'TrafficLog';
+
+    # enable 'Debug';
+    $app;
 };

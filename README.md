@@ -1,12 +1,18 @@
-[![Build Status](https://travis-ci.org/dex4er/Thrall.svg?branch=master)](https://travis-ci.org/dex4er/Thrall)[![CPAN version](https://badge.fury.io/pl/Thrall.svg)](https://metacpan.org/release/Thrall)
+# Thrall
 
-# NAME
+[![CI](https://github.com/dex4er/Thrall/actions/workflows/ci.yaml/badge.svg)](https://github.com/dex4er/Thrall/actions/workflows/ci.yaml)
+[![Trunk Check](https://github.com/dex4er/Thrall/actions/workflows/trunk.yaml/badge.svg)](https://github.com/dex4er/Thrall/actions/workflows/trunk.yaml)
+[![CPAN](https://img.shields.io/cpan/v/Thrall)](https://metacpan.org/dist/Thrall)
+
+## NAME
 
 thrall - a simple PSGI/Plack HTTP server which uses threads
 
-# SYNOPSIS
+## SYNOPSIS
 
-    $ thrall --workers=20 --max-reqs-per-child=100 app.psgi
+```console
+
+    $ thrall --max-workers=20 --max-reqs-per-child=100 app.psgi
 
     $ thrall --port=80 --ipv6=1 app.psgi
 
@@ -14,7 +20,9 @@ thrall - a simple PSGI/Plack HTTP server which uses threads
 
     $ thrall --socket=/tmp/thrall.sock app.psgi
 
-# DESCRIPTION
+```
+
+## DESCRIPTION
 
 Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
 threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
@@ -23,7 +31,7 @@ implementation which doesn't require any XS package.
 Thrall was started as a fork of [Starlet](https://metacpan.org/pod/Starlet) server. It has almost the same code
 as [Starlet](https://metacpan.org/pod/Starlet) and it was adapted to use threads instead fork().
 
-# OPTIONS
+## OPTIONS
 
 In addition to the options supported by [plackup](https://metacpan.org/pod/plackup), thrall accepts
 following options(s).
@@ -70,7 +78,7 @@ in main process so it doesn't consume all CPU. (default: 0.1)
 
 ## --ssl
 
-Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL) module is required. (default: 0)
+Enables SSL support. The [IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL) module is required. (default: 0)
 
 ## --ssl-key-file
 
@@ -93,15 +101,15 @@ Specifies the path to SSL CA certificate file for client verification.
 ## --ssl-verify-mode
 
 Specifies the verification mode for the client certificate.
-See ["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO::Socket::SSL#SSL_verify_mode) for details. (default: 0)
+See ["SSL\_verify\_mode" in IO::Socket::SSL](https://metacpan.org/pod/IO%3A%3ASocket%3A%3ASSL#SSL_verify_mode) for details. (default: 0)
 
 ## --ipv6
 
-Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO::Socket::IP) module is required. (default: 0)
+Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AIP) module is required. (default: 0)
 
 ## --socket
 
-Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO::Socket::UNIX) module is required. The
+Enables UNIX socket support. The [IO::Socket::UNIX](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AUNIX) module is required. The
 socket file have to be not yet created. The first character `@` or `\0` in
 the socket file name means that abstract socket address will be created.
 (default: none)
@@ -147,13 +155,13 @@ enables you to still have access to the errors when using `--daemonize`.
 
 Suppress the message about starting a server.
 
-# SEE ALSO
+## SEE ALSO
 
 [Starlight](https://metacpan.org/pod/Starlight),
 [Starlet](https://metacpan.org/pod/Starlet),
 [Starman](https://metacpan.org/pod/Starman)
 
-# LIMITATIONS
+## LIMITATIONS
 
 See ["BUGS AND LIMITATIONS" in threads](https://metacpan.org/pod/threads#BUGS-AND-LIMITATIONS) and ["Thread-Safety of
 System Libraries" in perlthrtut](https://metacpan.org/pod/perlthrtut#Thread-Safety-of-System-Libraries) to read about limitations for PSGI applications started
@@ -167,17 +175,17 @@ Thrall is very slow on first request for each thread. It is because spawning
 new thread is slow in Perl itself. Thrall is very fast on another requests and
 generally is faster than any implementation which uses fork.
 
-# BUGS
+## BUGS
 
 There is a problem with Perl threads implementation which occurs on Windows.
 Some requests can fail with message:
 
-    failed to set socket to nonblocking mode:An operation was attempted on
-    something that is not a socket.
+> failed to set socket to nonblocking mode:An operation was attempted on
+> something that is not a socket.
 
 or
 
-    Bad file descriptor at (eval 24) line 4.
+> Bad file descriptor at (eval 24) line 4.
 
 Cygwin version seems to be correct.
 
@@ -190,12 +198,12 @@ issue.
 ## Reporting
 
 If you find the bug or want to implement new features, please report it at
-[https://github.com/dex4er/Starlight/issues](https://github.com/dex4er/Starlight/issues)
+[https://github.com/dex4er/Thrall/issues](https://github.com/dex4er/Thrall/issues)
 
 The code repository is available at
-[http://github.com/dex4er/Starlight](http://github.com/dex4er/Starlight)
+[http://github.com/dex4er/Thrall](http://github.com/dex4er/Thrall)
 
-# AUTHORS
+## AUTHORS
 
 Piotr Roszatycki <dexter@cpan.org>
 
@@ -217,9 +225,9 @@ Jeremy Howard &lt;j+daemonize@howard.fm>
 
 Paul Seamons <paul@seamons.com>
 
-# LICENSE
+## LICENSE
 
-Copyright (c) 2013-2017 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2017, 2023 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

@@ -4,6 +4,31 @@
 
 thrall - a simple PSGI/Plack HTTP server which uses threads
 
+=head1 SYNOPSIS
+
+=for markdown ```console
+
+    $ thrall --max-workers=20 --max-reqs-per-child=100 app.psgi
+
+    $ thrall --port=80 --ipv6=1 app.psgi
+
+    $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+
+    $ thrall --socket=/tmp/thrall.sock app.psgi
+
+=for markdown ```
+
+=head1 DESCRIPTION
+
+Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
+threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
+implementation which doesn't require any XS package.
+
+Thrall was started as a fork of L<Starlet> server. It has almost the same code
+as L<Starlet> and it was adapted to use threads instead fork().
+
+=for readme stop
+
 =cut
 
 use 5.008_001;
@@ -35,28 +60,7 @@ if ($runner->{help}) {
 
 $runner->run;
 
-__DATA__
-
-=head1 SYNOPSIS
-
-  $ thrall --workers=20 --max-reqs-per-child=100 app.psgi
-
-  $ thrall --port=80 --ipv6=1 app.psgi
-
-  $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
-
-  $ thrall --socket=/tmp/thrall.sock app.psgi
-
-=head1 DESCRIPTION
-
-Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
-threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
-implementation which doesn't require any XS package.
-
-Thrall was started as a fork of L<Starlet> server. It has almost the same code
-as L<Starlet> and it was adapted to use threads instead fork().
-
-=for readme stop
+__END__
 
 =head1 OPTIONS
 
@@ -209,12 +213,20 @@ generally is faster than any implementation which uses fork.
 There is a problem with Perl threads implementation which occurs on Windows.
 Some requests can fail with message:
 
-  failed to set socket to nonblocking mode:An operation was attempted on
-  something that is not a socket.
+=over
+
+failed to set socket to nonblocking mode:An operation was attempted on
+something that is not a socket.
+
+=back
 
 or
 
-  Bad file descriptor at (eval 24) line 4.
+=over
+
+Bad file descriptor at (eval 24) line 4.
+
+=back
 
 Cygwin version seems to be correct.
 
@@ -227,10 +239,10 @@ issue.
 =head2 Reporting
 
 If you find the bug or want to implement new features, please report it at
-L<https://github.com/dex4er/Starlight/issues>
+L<https://github.com/dex4er/Thrall/issues>
 
 The code repository is available at
-L<http://github.com/dex4er/Starlight>
+L<http://github.com/dex4er/Thrall>
 
 =head1 AUTHORS
 
@@ -256,7 +268,7 @@ Paul Seamons <paul@seamons.com>
 
 =head1 LICENSE
 
-Copyright (c) 2013-2017 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2013-2017, 2023 Piotr Roszatycki <dexter@cpan.org>.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

@@ -1,3 +1,4 @@
+?.*
 *.bak
 *.bat
 *.deb
@@ -11,7 +12,9 @@
 .includepath
 .project
 .settings
+.vscode
 /Build
+/local
 Debian_CPANTS.txt
 *-[0-9]*.[0-9]*
 LICENSE
@@ -20,7 +23,7 @@ META.json
 META.yml
 MYMETA.json
 MYMETA.yml
-Makefile
+/Makefile
 Makefile.PL
 Makefile.old
 _build

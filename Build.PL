@@ -15,24 +15,24 @@ my $module = 'Thrall';
 (my $dist = $module) =~ s/::/-/g;
 
 my $build = Module::Build::My->new(
-    module_name             => $module,
-    dist_version_from       => 'script/thrall.pl',
-    license                 => 'perl',
-    requires                => {
-        'perl'                  => 5.008_001,
-        'Plack'                 => 0.9920,
+    module_name       => $module,
+    dist_version_from => 'script/thrall.pl',
+    license           => 'perl',
+    requires          => {
+        'perl'  => 5.008_001,
+        'Plack' => 0.9920,
         $Config{useithreads} ? ('threads' => 1.73) : ('forks' => 0),
     },
-    suggests                => {
-        'IO::Socket::IO'        => 0,
-        'IO::Socket::SSL'       => 0,
-        'Net::SSLeay'           => '1.49',
-        $^O eq 'MSWin32'     ? ('Time::TZOffset' => 0) : (),
+    suggests => {
+        'IO::Socket::IO'  => 0,
+        'IO::Socket::SSL' => 0,
+        'Net::SSLeay'     => '1.49',
+        $^O eq 'MSWin32' ? ('Time::TZOffset' => 0) : (),
     },
-    build_requires          => {
-        'HTTP::Tiny'            => 0,
-        'Test::More'            => 0.88,
-        'Test::TCP'             => 0.15,
+    build_requires => {
+        'LWP'        => 0,
+        'Test::More' => 0.88,
+        'Test::TCP'  => 0.15,
     },
     script_files => [
         'script/thrall.pl',
@@ -48,8 +48,8 @@ my $build = Module::Build::My->new(
         'compilet*', 'test-*',
         "$dist-*",
     ],
-    meta_merge              => {
-        resources               => {
+    meta_merge => {
+        resources => {
             bugtracker => "http://github.com/dex4er/$dist/issues",
             repository => "http://github.com/dex4er/$dist",
         },

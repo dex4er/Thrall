@@ -4,13 +4,13 @@ NAME
 
 SYNOPSIS
 
-      $ thrall --workers=20 --max-reqs-per-child=100 app.psgi
+        $ thrall --max-workers=20 --max-reqs-per-child=100 app.psgi
     
-      $ thrall --port=80 --ipv6=1 app.psgi
+        $ thrall --port=80 --ipv6=1 app.psgi
     
-      $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
+        $ thrall --port=443 --ssl=1 --ssl-key-file=file.key --ssl-cert-file=file.crt app.psgi
     
-      $ thrall --socket=/tmp/thrall.sock app.psgi
+        $ thrall --socket=/tmp/thrall.sock app.psgi
 
 DESCRIPTION
 
@@ -47,8 +47,8 @@ BUGS
     There is a problem with Perl threads implementation which occurs on
     Windows. Some requests can fail with message:
 
-      failed to set socket to nonblocking mode:An operation was attempted on
-      something that is not a socket.
+      failed to set socket to nonblocking mode:An operation was attempted
+      on something that is not a socket.
 
     or
 
@@ -65,9 +65,9 @@ BUGS
  Reporting
 
     If you find the bug or want to implement new features, please report it
-    at https://github.com/dex4er/Starlight/issues
+    at https://github.com/dex4er/Thrall/issues
 
-    The code repository is available at http://github.com/dex4er/Starlight
+    The code repository is available at http://github.com/dex4er/Thrall
 
 AUTHORS
 
@@ -93,7 +93,7 @@ AUTHORS
 
 LICENSE
 
-    Copyright (c) 2013-2017 Piotr Roszatycki <dexter@cpan.org>.
+    Copyright (c) 2013-2017, 2023 Piotr Roszatycki <dexter@cpan.org>.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as perl itself.
