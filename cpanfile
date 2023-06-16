@@ -2,7 +2,9 @@ requires 'perl', '5.008001';
 
 requires 'Plack', '0.9920';
 
-suggests 'IO::Socket::IP';
+recommends 'IO::Socket::IP';
+recommends 'Time::HiRes';
+
 suggests 'IO::Socket::SSL';
 suggests 'Net::SSLeay', '1.49';
 

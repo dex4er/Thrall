@@ -70,7 +70,8 @@ may add multiple paths by using this option multiple times. See [plackup](https:
 
 ## --ipv6
 
-Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AIP) module is required. (default: 0)
+Enables IPv6 support. The [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AIP) module is required. (default: 1
+if [IO::Socket::IP](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AIP) is available or 0 otherwise)
 
 ## --keepalive-timeout
 

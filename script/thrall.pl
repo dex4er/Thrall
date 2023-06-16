@@ -95,7 +95,8 @@ may add multiple paths by using this option multiple times. See L<plackup>.
 
 =head2 --ipv6
 
-Enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 0)
+Enables IPv6 support. The L<IO::Socket::IP> module is required. (default: 1
+if L<IO::Socket::IP> is available or 0 otherwise)
 
 =head2 --keepalive-timeout
 

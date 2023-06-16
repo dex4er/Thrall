@@ -55,7 +55,8 @@ use constant DEBUG            => $ENV{PERL_THRALL_DEBUG};
 use constant CHUNKSIZE        => 64 * 1024;
 use constant MAX_REQUEST_SIZE => 131072;
 
-use constant HAS_INET6 => eval { AF_INET6 && socket my $ipv6_socket, AF_INET6, SOCK_DGRAM, 0 };
+use constant HAS_INET6        => eval { AF_INET6 && socket my $ipv6_socket, AF_INET6, SOCK_DGRAM, 0 };
+use constant HAS_IO_SOCKET_IP => eval { require IO::Socket::IP; 1 } && 1;
 
 use constant EINTR       => exists &Errno::EINTR       ? &Errno::EINTR       : -1;    ## no critic
 use constant EAGAIN      => exists &Errno::EAGAIN      ? &Errno::EAGAIN      : -1;    ## no critic
@@ -78,7 +79,7 @@ sub new {
         server_software    => $args{server_software}    || "Thrall/$VERSION ($^O)",
         server_ready       => $args{server_ready}       || sub { },
         ssl                => $args{ssl},
-        ipv6               => $args{ipv6},
+        ipv6               => $args{ipv6} || HAS_IO_SOCKET_IP,
         ssl_key_file       => $args{ssl_key_file},
         ssl_cert_file      => $args{ssl_cert_file},
         ssl_ca_file        => $args{ssl_ca_file},
@@ -140,7 +141,7 @@ sub run {
 sub prepare_socket_class {
     my ($self, $args) = @_;
 
-    if ($self->{socket} and ($self->{port} or $self->{ipv6})) {
+    if ($self->{socket} and $self->{port}) {
         die "UNIX socket and ether IPv4 or IPv6 are not supported at the same time.\n";
     }
 
@@ -156,8 +157,7 @@ sub prepare_socket_class {
     }
 
     if ($self->{ipv6}) {
-        try { require IO::Socket::IP; 1 }
-            or die "IPv6 support requires IO::Socket::IP\n";
+        die "IPv6 support requires IO::Socket::IP\n" unless HAS_IO_SOCKET_IP;
         $self->{host} ||= '::';
         $args->{LocalAddr} = $self->{host};
     }
