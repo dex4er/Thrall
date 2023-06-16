@@ -83,6 +83,7 @@ test_tcp(
             quiet           => 1,
             host            => '127.0.0.1',
             port            => $port,
+            ipv6            => 0,
             ssl             => 1,
             ssl_key_file    => $server_key,
             ssl_cert_file   => $server_crt,

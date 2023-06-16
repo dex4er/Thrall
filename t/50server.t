@@ -44,6 +44,7 @@ test_tcp(
             quiet => 1,
             host  => '127.0.0.1',
             port  => $port,
+            ipv6  => 0,
         )->run(
             sub { [200, [], ["Hello world\n"]] },
         );

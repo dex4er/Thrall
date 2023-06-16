@@ -43,6 +43,7 @@ test_tcp(
             quiet       => 1,
             port        => $port,
             max_workers => 5,
+            ipv6        => 0,
         );
         $loader->run(
             sub {

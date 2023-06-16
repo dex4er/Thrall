@@ -24,6 +24,7 @@ my $server = Plack::Loader->load(
     min_reqs_per_child => 5,
     max_reqs_per_child => 10,
     quiet              => 1,
+    ipv6               => 0,
 );
 
 sleep 1;

@@ -33,6 +33,7 @@ if ($pid == 0) {
         quiet       => 1,
         max_workers => 5,
         socket      => $filename,
+        ipv6        => 0,
     );
     $loader->run(
         sub {
