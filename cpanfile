@@ -5,11 +5,14 @@ requires 'Plack', '0.9920';
 suggests 'IO::Socket::IP';
 suggests 'IO::Socket::SSL';
 suggests 'Net::SSLeay', '1.49';
-suggests 'forks';
 
-feature threads => sub {
-    recommends 'threads', '1.73';
-};
+use Config;
+
+if ($Config{useithreads}) {
+    requires 'threads', '1.73';
+} else {
+    requires 'forks';
+}
 
 on build => sub {
     requires 'Module::Build';
@@ -21,6 +24,10 @@ on test => sub {
     requires 'Test::TCP', '0.15';
 
     suggests 'LWP::Protocol::https';
+
+    if ($Config{useithreads}) {
+        requires 'forks';
+    }
 };
 
 feature examples => sub {

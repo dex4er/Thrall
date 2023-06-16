@@ -17,15 +17,17 @@ Thrall - a simple PSGI/Plack HTTP server which uses threads
 
     $ plackup -s Thrall --socket=/tmp/thrall.sock [options] your-app.psgi
 
-    $ Thrall your-app.psgi
+    $ thrall your-app.psgi
+
+    $ thrall --help
 
 =for markdown ```
 
 =head1 DESCRIPTION
 
 Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
-threads instead pre-forking, so it works correctly on Windows. It is pure-Perl
-implementation which doesn't require any XS package.
+threads instead pre-forking, so it works correctly on Windows. It is a
+pure-Perl implementation which doesn't require any XS package.
 
 See L<plackup> and L<thrall> (lower case) for available command line
 options.
@@ -39,7 +41,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0305';
+our $VERSION = '0.0400';
 
 1;
 

@@ -29,7 +29,7 @@ options.
 use strict;
 use warnings;
 
-our $VERSION = '0.0305';
+our $VERSION = '0.0400';
 
 use base qw(Thrall::Server);
 
@@ -143,6 +143,8 @@ sub run {
 }
 
 1;
+
+__END__
 
 =head1 SEE ALSO
 

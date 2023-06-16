@@ -1,3 +1,11 @@
+0.0400  2020-03-15      Piotr Roszatycki <dexter@cpan.org>
+
+* Print connection errors to stderr.
+* Allow to use SSL with IPv6.
+* New option `--ssl-client-ca-file`.
+* Listen on tcp46 socket with `--ipv6` option when `--host` is missing.
+* Default `--host` is `0.0.0.0`.
+
 0.0305  2017-01-03      Thomas Stinner <me@stinnux.de>
 
 * Allow setting of SSL CA and SSL Verification Mode

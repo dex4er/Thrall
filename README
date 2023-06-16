@@ -1,6 +1,6 @@
 NAME
 
-    thrall - a simple PSGI/Plack HTTP server which uses threads
+    thrall - a simple PSGI/Plack HTTP server that uses threads
 
 SYNOPSIS
 
@@ -15,8 +15,8 @@ SYNOPSIS
 DESCRIPTION
 
     Thrall is a standalone HTTP/1.1 server with keep-alive support. It uses
-    threads instead pre-forking, so it works correctly on Windows. It is
-    pure-Perl implementation which doesn't require any XS package.
+    threads instead pre-forking, so it works correctly on Windows. It is a
+    pure-Perl implementation that doesn't require any XS package.
 
     Thrall was started as a fork of Starlet server. It has almost the same
     code as Starlet and it was adapted to use threads instead fork().
@@ -32,20 +32,20 @@ LIMITATIONS
     applications started with Thrall and check if you encountered a known
     problem.
 
-    Especially, PSGI applications should avoid: changing current working
-    directory, catching signals, starting new processes. Environment
-    variables might (Linux, Unix) or might not (Windows) be shared between
-    threads.
+    Especially, PSGI applications should avoid: changing the current
+    working directory, catching signals, and starting new processes.
+    Environment variables might (Linux, Unix) or might not (Windows) be
+    shared between threads.
 
-    Thrall is very slow on first request for each thread. It is because
-    spawning new thread is slow in Perl itself. Thrall is very fast on
-    another requests and generally is faster than any implementation which
+    Thrall is very slow on the first request for each thread. It is because
+    spawning new threads is slow in Perl itself. Thrall is very fast on
+    another request and generally is faster than any implementation which
     uses fork.
 
 BUGS
 
     There is a problem with Perl threads implementation which occurs on
-    Windows. Some requests can fail with message:
+    Windows. Some requests can fail with the message:
 
       failed to set socket to nonblocking mode:An operation was attempted
       on something that is not a socket.
@@ -61,6 +61,22 @@ BUGS
     See https://rt.perl.org/rt3/Public/Bug/Display.html?id=119003 and
     https://github.com/dex4er/Thrall/issues/5 for more information about
     this issue.
+
+ MacOS
+
+    MacOS High Sierra and newer shows error:
+
+      objc[12345]: +[__NSCFConstantString initialize] may have been in
+      progress in another thread when fork() was called. objc[12345]:
+      +[__NSCFConstantString initialize] may have been in progress in
+      another thread when fork() was called. We cannot safely call it or
+      ignore it in the fork() child process. Crashing instead. Set a
+      breakpoint on objc_initializeAfterForkError to debug.
+
+    This error is caused by an added security to restrict multithreading.
+
+    To override the limitation, run export
+    OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES before using this server.
 
  Reporting
 
