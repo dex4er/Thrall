@@ -8,33 +8,23 @@ use warnings;
 use lib 'inc';
 use Module::Build::My;
 
-use Config;
+use Module::CPANfile;
 
 my $module = 'Thrall';
 
 (my $dist = $module) =~ s/::/-/g;
 
+my $prereqs = Module::CPANfile->load->prereqs;
+
 my $build = Module::Build::My->new(
     module_name       => $module,
     dist_version_from => 'script/thrall.pl',
     license           => 'perl',
-    requires          => {
-        'perl'  => 5.008_001,
-        'Plack' => 0.9920,
-        $Config{useithreads} ? ('threads' => 1.73) : ('forks' => 0),
-    },
-    suggests => {
-        'IO::Socket::IO'  => 0,
-        'IO::Socket::SSL' => 0,
-        'Net::SSLeay'     => '1.49',
-        $^O eq 'MSWin32' ? ('Time::TZOffset' => 0) : (),
-    },
-    build_requires => {
-        'LWP'        => 0,
-        'Test::More' => 0.88,
-        'Test::TCP'  => 0.15,
-    },
-    script_files => [
+    build_requires    => $prereqs->requirements_for('build', 'requires')->as_string_hash,
+    requires          => $prereqs->requirements_for('runtime', 'requires')->as_string_hash,
+    recommends        => $prereqs->requirements_for('runtime', 'recommends')->as_string_hash,
+    test_requires     => $prereqs->requirements_for('test', 'requires')->as_string_hash,
+    script_files      => [
         'script/thrall.pl',
     ],
     auto_configure_requires => 0,

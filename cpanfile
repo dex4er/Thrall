@@ -18,6 +18,7 @@ if ($Config{useithreads}) {
 
 on build => sub {
     requires 'Module::Build';
+    requires 'Module::CPANfile';
 };
 
 on test => sub {
@@ -34,8 +35,6 @@ on test => sub {
 
 feature examples => sub {
     recommends 'Mojolicious';
-    recommends 'Plack::Middleware::Debug';
-    recommends 'Plack::Middleware::TrafficLog';
 };
 
 on develop => sub {
