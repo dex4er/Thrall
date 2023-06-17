@@ -1,4 +1,4 @@
-0.0400  2020-03-15      Piotr Roszatycki <dexter@cpan.org>
+0.0400  2020-03-17      Piotr Roszatycki <dexter@cpan.org>
 
 * Print connection errors to stderr.
 * Allow to use SSL with IPv6.

@@ -2,19 +2,13 @@ requires 'perl', '5.008001';
 
 requires 'Plack', '0.9920';
 
+recommends 'forks';
+recommends 'threads', '1.73';
 recommends 'IO::Socket::IP';
 recommends 'Time::HiRes';
 
 suggests 'IO::Socket::SSL';
 suggests 'Net::SSLeay', '1.49';
-
-use Config;
-
-if ($Config{useithreads}) {
-    requires 'threads', '1.73';
-} else {
-    requires 'forks';
-}
 
 on build => sub {
     requires 'Module::Build';
@@ -27,10 +21,6 @@ on test => sub {
     requires 'Test::TCP', '0.15';
 
     suggests 'LWP::Protocol::https';
-
-    if ($Config{useithreads}) {
-        requires 'forks';
-    }
 };
 
 feature examples => sub {
