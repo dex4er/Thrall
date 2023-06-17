@@ -5,7 +5,7 @@
 * IPv6 is enabled by default if IO::Socket::IP is available.
 * New option `--ssl-client-ca-file`.
 * Listen on tcp46 socket with `--ipv6` option when `--host` is missing.
-* Default `--host` is `0.0.0.0`.
+* Default `--host` is undefined which means any interface.
 
 0.0305  2017-01-03      Thomas Stinner <me@stinnux.de>
 
