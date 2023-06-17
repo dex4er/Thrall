@@ -63,6 +63,12 @@ Changes the group ids or group names that the server should switch to after
 binding to the port. The ids or names can be separated with commas or space
 characters. (default: none)
 
+## -o, --host
+
+Binds to a TCP interface. Defaults to undef, which lets most server
+backends bind to the any (\*) interface. This option is only valid
+for servers which support TCP sockets.
+
 ## -I
 
 Specifies Perl library include paths, like perl's `-I` option. You
@@ -113,6 +119,14 @@ A number of worker threads. (default: 10)
 If set, randomizes the number of requests handled by a single worker process
 between the value and that supplied by `--max-reqs-per-chlid`.
 (default: none)
+
+## -p, --port
+
+Binds to a TCP port. Defaults to 5000. This option is only valid for
+servers which support TCP sockets.
+
+Note: default port 5000 may conflict with AirPlay server on MacOS 12
+(Monterey) or later.
 
 ## --pid
 
