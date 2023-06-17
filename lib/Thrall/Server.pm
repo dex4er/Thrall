@@ -158,8 +158,6 @@ sub prepare_socket_class {
 
     if ($self->{ipv6}) {
         die "IPv6 support requires IO::Socket::IP\n" unless HAS_IO_SOCKET_IP;
-        $self->{host} ||= '::';
-        $args->{LocalAddr} = $self->{host};
     }
 
     if ($self->{ssl}) {
