@@ -12,6 +12,7 @@ suggests 'Net::SSLeay', '1.49';
 on configure => sub {
     requires 'Module::Build';
     requires 'Module::CPANfile';
+    requires 'Software::License';
 };
 
 on test => sub {
