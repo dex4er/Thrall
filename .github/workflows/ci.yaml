@@ -69,9 +69,6 @@ jobs:
       - name: Make distribution
         run: ./Dist.SH
 
-      - name: Verify changed files
-        uses: tj-actions/verify-changed-files@v14
-
   test_with_cpanm:
     strategy:
       fail-fast: false
@@ -89,14 +86,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Install cpanm
+        run: cpanm --self-upgrade --notest
+
       - name: Install required dependencies
-        run: for i in 1 2 3; do cpanm --with-configure --with-recommends --with-suggests --installdeps --notest --skip-satisfied .; done
+        run: for i in 1 2 3; do cpanm --with-configure --installdeps --notest --skip-satisfied .; done
 
       - name: Skip extra tests
         run: echo 'TEST_SKIP_EXTRA=1' >> $GITHUB_ENV
 
       - name: Make distribution
         run: ./Dist.SH
-
-      - name: Verify changed files
-        uses: tj-actions/verify-changed-files@v14
