@@ -6,7 +6,7 @@
 
 ## NAME
 
-thrall - a simple PSGI/Plack HTTP server that uses threads
+thrall - Simple PSGI/Plack HTTP server that uses threads
 
 ## SYNOPSIS
 

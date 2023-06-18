@@ -10,7 +10,7 @@ recommends 'Time::HiRes';
 suggests 'IO::Socket::SSL';
 suggests 'Net::SSLeay', '1.49';
 
-on build => sub {
+on configure => sub {
     requires 'Module::Build';
     requires 'Module::CPANfile';
 };

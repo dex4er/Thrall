@@ -2,7 +2,7 @@ package Thrall;
 
 =head1 NAME
 
-Thrall - a simple PSGI/Plack HTTP server which uses threads
+Thrall - Simple PSGI/Plack HTTP server which uses threads
 
 =head1 SYNOPSIS
 
@@ -41,7 +41,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.0400';
+our $VERSION = '0.0401';
 
 1;
 

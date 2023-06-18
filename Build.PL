@@ -17,14 +17,15 @@ my $module = 'Thrall';
 my $prereqs = Module::CPANfile->load->prereqs;
 
 my $build = Module::Build::My->new(
-    module_name       => $module,
-    dist_version_from => 'script/thrall.pl',
-    license           => 'perl',
-    build_requires    => $prereqs->requirements_for('build', 'requires')->as_string_hash,
-    requires          => $prereqs->requirements_for('runtime', 'requires')->as_string_hash,
-    recommends        => $prereqs->requirements_for('runtime', 'recommends')->as_string_hash,
-    test_requires     => $prereqs->requirements_for('test', 'requires')->as_string_hash,
-    script_files      => [
+    module_name        => $module,
+    dist_version_from  => 'script/thrall.pl',
+    license            => 'perl',
+    configure_requires => $prereqs->requirements_for('configure', 'requires')->as_string_hash,
+    build_requires     => $prereqs->requirements_for('build', 'requires')->as_string_hash,
+    requires           => $prereqs->requirements_for('runtime', 'requires')->as_string_hash,
+    recommends         => $prereqs->requirements_for('runtime', 'recommends')->as_string_hash,
+    test_requires      => $prereqs->requirements_for('test', 'requires')->as_string_hash,
+    script_files       => [
         'script/thrall.pl',
     ],
     auto_configure_requires => 0,

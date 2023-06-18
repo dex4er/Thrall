@@ -1,3 +1,7 @@
+0.0401  2023-06-18      Piotr Roszatycki <dexter@cpan.org>
+
+* Correct configure requirements.
+
 0.0400  2020-03-17      Piotr Roszatycki <dexter@cpan.org>
 
 * Print connection errors to stderr.
