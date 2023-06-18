@@ -8,6 +8,7 @@ use warnings;
 use lib 'inc';
 use Module::Build::My;
 
+use Config;
 use Module::CPANfile;
 
 my $module = 'Thrall';

@@ -1,9 +1,8 @@
 requires 'perl', '5.008001';
 
+requires 'threads', '1.73';
 requires 'Plack', '0.9920';
 
-recommends 'forks';
-recommends 'threads', '1.73';
 recommends 'IO::Socket::IP';
 recommends 'Time::HiRes';
 
