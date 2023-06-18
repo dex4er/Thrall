@@ -54,10 +54,10 @@ jobs:
           echo "PERL5LIB=$GITHUB_WORKSPACE/local/lib/perl5" | tee -a $GITHUB_ENV
 
       - name: Install cpm
-        run: cpanm --notest --skip-satisfied App::cpm
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install --color --no-test App::cpm
 
       - name: Install required dependencies
-        run: cpm install --color --no-test --with-recommends --with-suggests
+        run: cpm install --color --no-test --with-configure --with-recommends --with-suggests
 
       - name: Install extra dependencies
         if: matrix.perl-version == '5.36'
@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install required dependencies
-        run: for i in 1 2 3; do cpanm --with-recommends --with-suggests --installdeps --notest --skip-satisfied .; done
+        run: for i in 1 2 3; do cpanm --with-configure --with-recommends --with-suggests --installdeps --notest --skip-satisfied .; done
 
       - name: Skip extra tests
         run: echo 'TEST_SKIP_EXTRA=1' >> $GITHUB_ENV
