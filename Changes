@@ -1,3 +1,7 @@
+0.0403  2023-06-20      Piotr Roszatycki <dexter@cpan.org>
+
+* Configure requires threads.
+
 0.0402  2023-06-18      Piotr Roszatycki <dexter@cpan.org>
 
 * Requires threads.

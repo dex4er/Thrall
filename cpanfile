@@ -10,6 +10,7 @@ suggests 'IO::Socket::SSL';
 suggests 'Net::SSLeay', '1.49';
 
 on configure => sub {
+    requires 'threads';
     requires 'Module::Build';
     requires 'Module::CPANfile';
     requires 'Software::License';
