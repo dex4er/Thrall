@@ -54,6 +54,7 @@ test_tcp(
             port        => $port,
             max_workers => 5,
             ipv6        => 0,
+            host        => '127.0.0.1',
         );
         $loader->run(
             sub {

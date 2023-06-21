@@ -25,7 +25,7 @@ test_tcp(
         my $port = shift;
         my $runner = Plack::Runner->new;
         $runner->parse_options(
-            qw(--server Thrall --env test --quiet --max-workers 0 --ipv6=0 --port), $port,
+            qw(--server Thrall --env test --quiet --max-workers 10 --ipv6=0 --host 127.0.0.1 --port), $port,
         );
         $runner->run(
             sub {

@@ -25,7 +25,7 @@ L<Plack::Handler::Thrall> handler when started with `plackup` command.
 use strict;
 use warnings;
 
-our $VERSION = '0.0403';
+our $VERSION = '0.0404';
 
 use Config;
 

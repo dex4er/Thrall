@@ -1,3 +1,7 @@
+0.0404  2023-06-20      Piotr Roszatycki <dexter@cpan.org>
+
+* Tests use explicitly 127.0.0.1 as a host.
+
 0.0403  2023-06-20      Piotr Roszatycki <dexter@cpan.org>
 
 * Configure requires threads.
