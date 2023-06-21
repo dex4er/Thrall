@@ -37,7 +37,7 @@ test_tcp(
             $seen_pid{ $res->content }++;
         }
 
-        is keys(%seen_pid), 23, 'In Harakiri mode, each pid only used once';
+        cmp_ok(keys(%seen_pid), '<=', 10, 'In non-harakiri mode, pid is reused');
 
         sleep 1;
     },
@@ -48,11 +48,7 @@ test_tcp(
             qw(--server Thrall --env test --quiet --max-workers 10 --ipv6=0 --host 127.0.0.1 --port), $port,
         );
         $runner->run(
-            sub {
-                my $env = shift;
-                $env->{'psgix.harakiri.commit'} = $env->{'psgix.harakiri'};
-                return [200, ['Content-Type' => 'text/plain'], [threads->tid]];
-            },
+            sub { [200, ['Content-Type' => 'text/plain'], [threads->tid]] },
         );
     }
 );
