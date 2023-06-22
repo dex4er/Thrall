@@ -29,7 +29,7 @@ options.
 use strict;
 use warnings;
 
-our $VERSION = '0.0404';
+our $VERSION = '0.0405';
 
 use base qw(Thrall::Server);
 
